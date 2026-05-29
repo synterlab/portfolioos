@@ -12,7 +12,7 @@ const requireAuth = (req: any, res: any, next: any) => {
     return res.status(401).json({ error: "Unauthorized" });
   }
   req.userId = userId;
-  next();
+  return next();
 };
 
 // GET /api/portfolio/me
@@ -25,10 +25,10 @@ router.get("/me", requireAuth, async (req: any, res) => {
     if (!portfolio) {
       return res.status(404).json({ error: "Portfolio not found" });
     }
-    res.json(portfolio);
+    return res.json(portfolio);
   } catch (err) {
     req.log.error({ err }, "Failed to get portfolio");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -50,13 +50,13 @@ router.post("/me/create", requireAuth, async (req: any, res) => {
       socialLinks: socialLinks ?? {},
       isPublic: isPublic ?? true,
     }).returning();
-    res.status(201).json(portfolio);
+    return res.status(201).json(portfolio);
   } catch (err: any) {
     if (err?.code === "23505") {
       return res.status(409).json({ error: "Username already taken" });
     }
     req.log.error({ err }, "Failed to create portfolio");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -69,13 +69,13 @@ router.put("/me", requireAuth, async (req: any, res) => {
       .where(eq(portfoliosTable.userId, req.userId))
       .returning();
     if (!updated) return res.status(404).json({ error: "Portfolio not found" });
-    res.json(updated);
+    return res.json(updated);
   } catch (err: any) {
     if (err?.code === "23505") {
       return res.status(409).json({ error: "Username already taken" });
     }
     req.log.error({ err }, "Failed to update portfolio");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -86,9 +86,9 @@ router.get("/check/:username", async (req, res) => {
     const existing = await db.query.portfoliosTable.findFirst({
       where: eq(portfoliosTable.username, username),
     });
-    res.json({ available: !existing, username });
+    return res.json({ available: !existing, username });
   } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -101,9 +101,9 @@ router.get("/:username", async (req, res) => {
       with: { items: { orderBy: (items: any, { asc }: any) => [asc(items.order), asc(items.createdAt)] } },
     });
     if (!portfolio) return res.status(404).json({ error: "Portfolio not found" });
-    res.json(portfolio);
+    return res.json(portfolio);
   } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
