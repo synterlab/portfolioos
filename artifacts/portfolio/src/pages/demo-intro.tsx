@@ -2,39 +2,66 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 
-const BOOT_LINES = [
-  { text: "SINALYTICA OS v2.6.1 — booting...", delay: 0, color: "#00ff41" },
-  { text: "Initializing terminal environment...", delay: 300, color: "#555" },
-  { text: "[  OK  ] Loaded kernel modules", delay: 600, color: "#00cc33" },
-  { text: "[  OK  ] Started filesystem checks", delay: 900, color: "#00cc33" },
-  { text: "[  OK  ] Mounted portfolio volumes", delay: 1100, color: "#00cc33" },
-  { text: "[  OK  ] Network interface UP — sinalytica.life", delay: 1350, color: "#00cc33" },
-  { text: "Loading portfolio engine...", delay: 1700, color: "#555" },
-  { text: "[  OK  ] Portfolio engine loaded", delay: 2000, color: "#00cc33" },
-  { text: "[  OK  ] Experience renderer ready", delay: 2200, color: "#00cc33" },
-  { text: "", delay: 2500, color: "#000" },
-  { text: "Welcome. Your career. Your terminal.", delay: 2700, color: "#fff" },
+type Phase = "story" | "boot" | "enter";
+
+const STORY_LINES = [
+  { text: "> another job application sent...", delay: 400, color: "#555" },
+  { text: "> another generic PDF... ignored.", delay: 1100, color: "#555" },
+  { text: "> lost in a pile of resumes.", delay: 1800, color: "#555" },
+  { text: "", delay: 2400, color: "#000" },
+  { text: "> you have skills. real ones.", delay: 2700, color: "#888" },
+  { text: "> but no one stops to look.", delay: 3300, color: "#888" },
+  { text: "", delay: 3800, color: "#000" },
+  { text: "> what if your portfolio had a boot screen?", delay: 4200, color: "#00cc33" },
+  { text: "> what if your career was an OS?", delay: 5000, color: "#00cc33" },
+  { text: "> what if your story was unforgettable?", delay: 5700, color: "#00ff41" },
+  { text: "", delay: 6300, color: "#000" },
+  { text: "> sinalytica.life", delay: 6700, color: "#00ff41" },
+  { text: "> your career. your terminal. your story.", delay: 7400, color: "#fff" },
 ];
+
+const BOOT_LINES = [
+  { text: "SINALYTICA OS v2.6  initializing...", delay: 0, color: "#00ff41" },
+  { text: "[  OK  ] Mounted portfolio volumes", delay: 350, color: "#00cc33" },
+  { text: "[  OK  ] Network interface: sinalytica.life", delay: 650, color: "#00cc33" },
+  { text: "[  OK  ] Experience renderer ready", delay: 950, color: "#00cc33" },
+  { text: "[  OK  ] Story engine loaded", delay: 1200, color: "#00cc33" },
+  { text: "", delay: 1450, color: "#000" },
+  { text: "System ready.", delay: 1650, color: "#fff" },
+];
+
+const STORY_DONE_AT = 8400;
+const BOOT_DONE_AT = STORY_DONE_AT + 2500;
+const ENTER_SHOWN_AT = BOOT_DONE_AT + 400;
 
 export default function DemoIntro() {
   const [, setLocation] = useLocation();
-  const [visibleLines, setVisibleLines] = useState<number[]>([]);
+  const [phase, setPhase] = useState<Phase>("story");
+  const [visibleStory, setVisibleStory] = useState<number[]>([]);
+  const [visibleBoot, setVisibleBoot] = useState<number[]>([]);
   const [showEnter, setShowEnter] = useState(false);
   const [exiting, setExiting] = useState(false);
+  const [cursor, setCursor] = useState(true);
 
   useEffect(() => {
-    BOOT_LINES.forEach((line, i) => {
-      setTimeout(() => {
-        setVisibleLines((prev) => [...prev, i]);
-      }, line.delay);
+    STORY_LINES.forEach((line, i) => {
+      setTimeout(() => setVisibleStory((p) => [...p, i]), line.delay);
     });
-    setTimeout(() => setShowEnter(true), 3400);
+    setTimeout(() => setPhase("boot"), STORY_DONE_AT);
+    BOOT_LINES.forEach((line, i) => {
+      setTimeout(() => setVisibleBoot((p) => [...p, i]), STORY_DONE_AT + line.delay);
+    });
+    setTimeout(() => setPhase("enter"), BOOT_DONE_AT);
+    setTimeout(() => setShowEnter(true), ENTER_SHOWN_AT);
+
+    const cursorInterval = setInterval(() => setCursor((c) => !c), 530);
+    return () => clearInterval(cursorInterval);
   }, []);
 
   function handleEnter() {
     if (!showEnter) return;
     setExiting(true);
-    setTimeout(() => setLocation("/home"), 700);
+    setTimeout(() => setLocation("/home"), 800);
   }
 
   return (
@@ -42,9 +69,8 @@ export default function DemoIntro() {
       {!exiting ? (
         <motion.div
           key="intro"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.7 }}
+          exit={{ opacity: 0, filter: "blur(8px)" }}
+          transition={{ duration: 0.8 }}
           onClick={handleEnter}
           style={{
             minHeight: "100vh",
@@ -55,110 +81,200 @@ export default function DemoIntro() {
             justifyContent: "center",
             cursor: showEnter ? "pointer" : "default",
             fontFamily: "'Share Tech Mono', 'Courier New', monospace",
-            padding: "40px 24px",
+            padding: "40px 20px",
             userSelect: "none",
+            position: "relative",
+            overflow: "hidden",
           }}
         >
-          {/* Logo */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            style={{ marginBottom: 40, textAlign: "center" }}
-          >
-            <img
-              src="/sinalytica-logo.png"
-              alt="Sinalytica"
-              width={96}
-              height={96}
-              style={{ imageRendering: "pixelated", display: "block", margin: "0 auto 12px" }}
-            />
-            <div style={{ color: "#00ff41", fontSize: 11, letterSpacing: "5px" }}>
-              SINALYTICA.LIFE
-            </div>
-          </motion.div>
-
-          {/* Boot terminal */}
+          {/* Scanline overlay */}
           <div
             style={{
-              width: "100%",
-              maxWidth: 560,
-              background: "#050505",
-              border: "1px solid #1a1a1a",
-              borderRadius: 10,
-              overflow: "hidden",
-              boxShadow: "0 0 60px rgba(0,255,65,0.08)",
+              position: "fixed",
+              inset: 0,
+              background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px)",
+              pointerEvents: "none",
+              zIndex: 10,
             }}
-          >
-            {/* Title bar */}
-            <div style={{ background: "#0a0a0a", borderBottom: "1px solid #111", padding: "8px 14px", display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ display: "flex", gap: 6 }}>
-                {["#ff5f57", "#febc2e", "#28c840"].map((c) => (
-                  <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
-                ))}
-              </div>
-              <span style={{ color: "#333", fontSize: 11, marginLeft: 8, letterSpacing: "0.5px" }}>
-                sinalytica — system boot
+          />
+
+          {/* Ambient glow */}
+          <div
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 600,
+              height: 600,
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(0,255,65,0.04) 0%, transparent 70%)",
+              pointerEvents: "none",
+            }}
+          />
+
+          <div style={{ width: "100%", maxWidth: 560, position: "relative", zIndex: 1 }}>
+            {/* Logo */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 36 }}
+            >
+              <img
+                src="/sinalytica-logo.png"
+                alt="Sinalytica"
+                width={36}
+                height={36}
+                style={{ imageRendering: "pixelated" }}
+              />
+              <span style={{ color: "#00ff41", fontSize: 12, letterSpacing: "4px" }}>
+                SINALYTICA.LIFE
               </span>
-            </div>
+            </motion.div>
 
-            {/* Lines */}
-            <div style={{ padding: "20px 22px 24px", minHeight: 280 }}>
-              {BOOT_LINES.map((line, i) => (
+            {/* Story phase */}
+            <AnimatePresence>
+              {(phase === "story" || phase === "boot" || phase === "enter") && (
                 <motion.div
-                  key={i}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: visibleLines.includes(i) ? 1 : 0 }}
-                  transition={{ duration: 0.15 }}
-                  style={{
-                    color: line.color,
-                    fontSize: 13,
-                    lineHeight: 1.9,
-                    minHeight: line.text ? undefined : 10,
-                  }}
+                  key="story"
+                  style={{ marginBottom: 32 }}
                 >
-                  {line.text}
-                </motion.div>
-              ))}
-
-              {/* Blinking enter prompt */}
-              {showEnter && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3, delay: 0.2 }}
-                  style={{ marginTop: 20 }}
-                >
-                  <motion.div
-                    animate={{ opacity: [1, 0, 1] }}
-                    transition={{ duration: 1.1, repeat: Infinity, ease: "steps(1)" }}
-                    style={{
-                      display: "inline-block",
-                      border: "1px solid #00ff41",
-                      color: "#00ff41",
-                      fontSize: 12,
-                      letterSpacing: "3px",
-                      padding: "8px 20px",
-                      borderRadius: 4,
-                    }}
-                  >
-                    ▶ CLICK ANYWHERE TO ENTER
-                  </motion.div>
+                  {STORY_LINES.map((line, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -4 }}
+                      animate={{ opacity: visibleStory.includes(i) ? 1 : 0, x: visibleStory.includes(i) ? 0 : -4 }}
+                      transition={{ duration: 0.2 }}
+                      style={{
+                        color: line.color,
+                        fontSize: 14,
+                        lineHeight: 2,
+                        minHeight: line.text ? undefined : 8,
+                      }}
+                    >
+                      {line.text}
+                      {i === STORY_LINES.length - 1 && visibleStory.includes(i) && phase === "story" && (
+                        <span style={{ color: "#00ff41", opacity: cursor ? 1 : 0 }}>_</span>
+                      )}
+                    </motion.div>
+                  ))}
                 </motion.div>
               )}
-            </div>
+            </AnimatePresence>
+
+            {/* Boot phase */}
+            <AnimatePresence>
+              {(phase === "boot" || phase === "enter") && (
+                <motion.div
+                  key="boot"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  style={{
+                    background: "#050505",
+                    border: "1px solid #1a1a1a",
+                    borderRadius: 8,
+                    overflow: "hidden",
+                    boxShadow: "0 0 40px rgba(0,255,65,0.07)",
+                  }}
+                >
+                  {/* Terminal bar */}
+                  <div style={{ background: "#0a0a0a", borderBottom: "1px solid #111", padding: "7px 14px", display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      {["#ff5f57", "#febc2e", "#28c840"].map((c) => (
+                        <div key={c} style={{ width: 9, height: 9, borderRadius: "50%", background: c }} />
+                      ))}
+                    </div>
+                    <span style={{ color: "#333", fontSize: 10, marginLeft: 6, letterSpacing: "0.5px" }}>
+                      sinalytica -- system boot
+                    </span>
+                  </div>
+                  <div style={{ padding: "16px 20px 20px" }}>
+                    {BOOT_LINES.map((line, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: visibleBoot.includes(i) ? 1 : 0 }}
+                        transition={{ duration: 0.12 }}
+                        style={{
+                          color: line.color,
+                          fontSize: 12,
+                          lineHeight: 1.85,
+                          minHeight: line.text ? undefined : 8,
+                        }}
+                      >
+                        {line.text}
+                      </motion.div>
+                    ))}
+
+                    {/* Enter prompt */}
+                    {showEnter && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3, delay: 0.2 }}
+                        style={{ marginTop: 18 }}
+                      >
+                        <motion.div
+                          animate={{ opacity: [1, 0.2, 1] }}
+                          transition={{ duration: 1.2, repeat: Infinity, ease: "steps(1)" }}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 10,
+                            border: "1px solid #00ff41",
+                            color: "#00ff41",
+                            fontSize: 11,
+                            letterSpacing: "3px",
+                            padding: "8px 18px",
+                            borderRadius: 4,
+                            boxShadow: "0 0 12px rgba(0,255,65,0.15)",
+                          }}
+                        >
+                          <span style={{ fontSize: 14 }}>&#9654;</span>
+                          CLICK ANYWHERE TO ENTER
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Skip hint */}
+          {/* Bottom links */}
           {showEnter && (
-            <motion.p
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              style={{ marginTop: 28, color: "#333", fontSize: 11, letterSpacing: "1px" }}
+              transition={{ delay: 0.6 }}
+              style={{
+                position: "fixed",
+                bottom: 24,
+                left: 0,
+                right: 0,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 24,
+                zIndex: 20,
+              }}
+              onClick={(e) => e.stopPropagation()}
             >
-              tap anywhere to continue
-            </motion.p>
+              <a
+                href="https://x.com/Sinalyticalife"
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: "#333", fontSize: 11, letterSpacing: "1px", textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#00ff41")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#333")}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.261 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                @Sinalyticalife
+              </a>
+              <span style={{ color: "#1a1a1a" }}>|</span>
+              <span style={{ color: "#222", fontSize: 11, letterSpacing: "1px" }}>sinalytica.life</span>
+            </motion.div>
           )}
         </motion.div>
       ) : (
