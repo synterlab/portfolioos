@@ -32,7 +32,7 @@ function RetroMonitorPreview() {
         <div style={{ background: "#008080", flex: 1, display: "flex", flexDirection: "column", padding: 12 }}>
           <div style={{ background: "#c0c0c0", border: "2px solid", borderColor: "#fff #808080 #808080 #fff", flex: 1, display: "flex", flexDirection: "column" }}>
             <div style={{ background: "linear-gradient(to right, #000080, #1084d0)", padding: "2px 6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ color: "white", fontFamily: "monospace", fontSize: 10, fontWeight: "bold" }}>Your Portfolio — PortfolioOS 2026</span>
+              <span style={{ color: "white", fontFamily: "monospace", fontSize: 10, fontWeight: "bold" }}>Your Portfolio — sinalytica.life 2026</span>
               <div className="flex gap-0.5">
                 {["_", "□", "×"].map((c) => <div key={c} style={{ width: 14, height: 12, background: "#c0c0c0", border: "1px solid", borderColor: "#fff #808080 #808080 #fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8 }}>{c}</div>)}
               </div>
@@ -74,7 +74,7 @@ export default function Landing() {
       <header className="border-b border-white/10 px-6 py-4 flex justify-between items-center sticky top-0 z-50 bg-background/80 backdrop-blur-sm">
         <div className="flex items-center gap-2 font-bold text-base tracking-tight">
           <Monitor size={18} className="text-primary" />
-          PortfolioOS
+          sinalytica.life
         </div>
         <div className="flex gap-3">
           <Button variant="ghost" size="sm" asChild>
@@ -171,7 +171,7 @@ export default function Landing() {
       </section>
 
       <footer className="border-t border-white/10 px-6 py-6 text-center text-xs text-muted-foreground">
-        PortfolioOS — Built on Replit
+        sinalytica.life — Built on Replit
       </footer>
     </div>
   );
