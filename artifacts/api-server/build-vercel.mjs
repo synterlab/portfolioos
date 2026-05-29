@@ -12,7 +12,7 @@ import { build } from 'esbuild';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
+import { mkdirSync, writeFileSync, existsSync, cpSync } from 'node:fs';
 
 globalThis.require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -74,6 +74,15 @@ if (isVercel) {
     shouldAddHelpers: true,
   };
   writeFileSync(path.join(outDir, '.vc-config.json'), JSON.stringify(vcConfig, null, 2));
+
+  // Copy frontend static files into /vercel/output/static/
+  // This is required when using the Build Output API — Vercel won't pick up
+  // outputDirectory from vercel.json when Build Output API files are present.
+  const staticDir = path.join(vercelOutput, 'static');
+  const frontendDist = path.join(root, 'artifacts/portfolio/dist/public');
+  mkdirSync(staticDir, { recursive: true });
+  cpSync(frontendDist, staticDir, { recursive: true });
+  console.log(`✓ Frontend static files copied → ${staticDir}`);
 
   // Write the top-level routes config so Vercel knows how to route requests
   const configPath = path.join(vercelOutput, 'config.json');
