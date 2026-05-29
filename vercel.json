@@ -2,7 +2,7 @@
   "version": 2,
   "framework": null,
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter @workspace/api-spec run codegen && pnpm run typecheck:libs && PORT=3000 BASE_PATH=/ pnpm --filter @workspace/portfolio run build && pnpm --filter @workspace/api-server exec esbuild ../../api/_handler.ts --bundle --platform=node --format=cjs --outfile=../../api/index.js --external:pg-native --external:fsevents --external:\"*.node\" --external:pino-pretty --log-level=info",
+  "buildCommand": "pnpm run build:vercel",
   "outputDirectory": "artifacts/portfolio/dist/public",
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/index" },
