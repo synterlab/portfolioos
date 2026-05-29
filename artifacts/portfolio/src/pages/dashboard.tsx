@@ -17,8 +17,19 @@ import { Badge } from "@/components/ui/badge";
 import {
   User, Briefcase, GraduationCap, FolderOpen, ExternalLink,
   Copy, Check, Plus, Trash2, Pencil, X, LogOut, Globe, ChevronRight,
-  Monitor,
 } from "lucide-react";
+
+function SinalyticaLogo({ size = 24 }: { size?: number }) {
+  return (
+    <img
+      src="/sinalytica-logo.png"
+      alt="Sinalytica"
+      width={size}
+      height={size}
+      style={{ imageRendering: "pixelated", flexShrink: 0 }}
+    />
+  );
+}
 
 type Section = "profile" | "experience" | "education" | "projects";
 
@@ -77,12 +88,12 @@ function Onboarding({ onCreate }: { onCreate: () => void }) {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        <div className="flex items-center gap-2 mb-8">
-          <Monitor size={20} className="text-primary" />
-          <span className="font-bold text-lg tracking-tight">PortfolioOS</span>
+        <div className="flex items-center gap-2.5 mb-8">
+          <SinalyticaLogo size={32} />
+          <span className="font-bold text-lg tracking-tight">sinalytica.life</span>
         </div>
         <h1 className="text-3xl font-bold mb-2">Claim your username</h1>
-        <p className="text-muted-foreground mb-8">Your portfolio will be live at <span className="text-foreground font-mono">/p/username</span></p>
+        <p className="text-muted-foreground mb-8">Your portfolio will be live at <span className="text-foreground font-mono">sinalytica.life/p/username</span></p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
@@ -471,9 +482,9 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background text-foreground flex">
       {/* Sidebar */}
       <aside className="w-60 border-r border-border flex flex-col h-screen sticky top-0">
-        <div className="p-5 border-b border-border flex items-center gap-2">
-          <Monitor size={18} className="text-primary" />
-          <span className="font-bold tracking-tight">PortfolioOS</span>
+        <div className="p-5 border-b border-border flex items-center gap-2.5">
+          <SinalyticaLogo size={26} />
+          <span className="font-bold tracking-tight text-sm">sinalytica.life</span>
         </div>
 
         <nav className="flex-1 p-3 space-y-0.5">
