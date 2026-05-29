@@ -28,7 +28,7 @@ function BootScreen({ name, onDone }: { name: string; onDone: () => void }) {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
           className="text-white/80 text-sm"
         >
-          PortfolioOS v2026.1 — Personal Experience Viewer
+          sinalytica.life — Personal Experience Viewer
         </motion.p>
         <motion.p
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
@@ -516,7 +516,7 @@ function Win95Portfolio({ portfolio }: { portfolio: any }) {
                   {(portfolio.items ?? []).length} items
                 </div>
                 <div style={{ border: "1px inset #808080", padding: "0 8px", fontSize: 10, fontFamily: "monospace", color: "#000", marginLeft: "auto" }}>
-                  PortfolioOS 2026
+                  sinalytica.life 2026
                 </div>
               </div>
             </div>
