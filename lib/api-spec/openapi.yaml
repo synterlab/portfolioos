@@ -1,0 +1,354 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Portfolio Builder API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: portfolio
+    description: Portfolio operations
+  - name: items
+    description: Portfolio item operations
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /portfolio/me:
+    get:
+      operationId: getMyPortfolio
+      tags: [portfolio]
+      summary: Get current user's portfolio
+      responses:
+        "200":
+          description: User portfolio
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Portfolio"
+        "404":
+          description: Not found
+    put:
+      operationId: updateMyPortfolio
+      tags: [portfolio]
+      summary: Update current user's portfolio
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PortfolioInput"
+      responses:
+        "200":
+          description: Updated portfolio
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Portfolio"
+
+  /portfolio/me/create:
+    post:
+      operationId: createMyPortfolio
+      tags: [portfolio]
+      summary: Create portfolio for current user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PortfolioInput"
+      responses:
+        "201":
+          description: Created portfolio
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Portfolio"
+
+  /portfolio/{username}:
+    get:
+      operationId: getPublicPortfolio
+      tags: [portfolio]
+      summary: Get public portfolio by username
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Public portfolio
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Portfolio"
+        "404":
+          description: Not found
+
+  /portfolio/check/{username}:
+    get:
+      operationId: checkUsername
+      tags: [portfolio]
+      summary: Check if username is available
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Availability status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsernameAvailability"
+
+  /items:
+    get:
+      operationId: getMyItems
+      tags: [items]
+      summary: Get all portfolio items for current user
+      responses:
+        "200":
+          description: List of items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PortfolioItem"
+    post:
+      operationId: createItem
+      tags: [items]
+      summary: Create a portfolio item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PortfolioItemInput"
+      responses:
+        "201":
+          description: Created item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortfolioItem"
+
+  /items/{id}:
+    put:
+      operationId: updateItem
+      tags: [items]
+      summary: Update a portfolio item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PortfolioItemInput"
+      responses:
+        "200":
+          description: Updated item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortfolioItem"
+    delete:
+      operationId: deleteItem
+      tags: [items]
+      summary: Delete a portfolio item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    Portfolio:
+      type: object
+      required: [id, userId, username, displayName, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: string
+        username:
+          type: string
+        displayName:
+          type: string
+        tagline:
+          type: ["string", "null"]
+        bio:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        theme:
+          type: string
+          default: "retro"
+        skills:
+          type: array
+          items:
+            type: string
+        socialLinks:
+          $ref: "#/components/schemas/SocialLinks"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PortfolioItem"
+        isPublic:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    PortfolioInput:
+      type: object
+      properties:
+        username:
+          type: string
+        displayName:
+          type: string
+        tagline:
+          type: string
+        bio:
+          type: string
+        email:
+          type: string
+        location:
+          type: string
+        avatarUrl:
+          type: string
+        theme:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        socialLinks:
+          $ref: "#/components/schemas/SocialLinks"
+        isPublic:
+          type: boolean
+
+    SocialLinks:
+      type: object
+      properties:
+        github:
+          type: ["string", "null"]
+        linkedin:
+          type: ["string", "null"]
+        twitter:
+          type: ["string", "null"]
+        website:
+          type: ["string", "null"]
+
+    PortfolioItem:
+      type: object
+      required: [id, portfolioId, type, title, createdAt]
+      properties:
+        id:
+          type: integer
+        portfolioId:
+          type: integer
+        type:
+          type: string
+          enum: [experience, education, project, skill]
+        title:
+          type: string
+        subtitle:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        startDate:
+          type: ["string", "null"]
+        endDate:
+          type: ["string", "null"]
+        isCurrent:
+          type: boolean
+        tags:
+          type: array
+          items:
+            type: string
+        url:
+          type: ["string", "null"]
+        order:
+          type: integer
+        createdAt:
+          type: string
+
+    PortfolioItemInput:
+      type: object
+      required: [type, title]
+      properties:
+        type:
+          type: string
+          enum: [experience, education, project, skill]
+        title:
+          type: string
+        subtitle:
+          type: string
+        description:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        isCurrent:
+          type: boolean
+        tags:
+          type: array
+          items:
+            type: string
+        url:
+          type: string
+        order:
+          type: integer
+
+    UsernameAvailability:
+      type: object
+      required: [available, username]
+      properties:
+        available:
+          type: boolean
+        username:
+          type: string
