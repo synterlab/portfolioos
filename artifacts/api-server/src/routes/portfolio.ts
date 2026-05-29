@@ -1,110 +1,97 @@
 import { Router } from "express";
 import { getAuth } from "@clerk/express";
-import { db, portfoliosTable, portfolioItemsTable } from "@workspace/db";
-import { eq, and } from "drizzle-orm";
 
 const router = Router();
 
 const requireAuth = (req: any, res: any, next: any) => {
   const auth = getAuth(req);
   const userId = auth?.userId;
-  if (!userId) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+  if (!userId) return res.status(401).json({ error: "Unauthorized" });
   req.userId = userId;
   return next();
 };
 
-// GET /api/portfolio/me
-router.get("/me", requireAuth, async (req: any, res) => {
-  try {
-    const portfolio = await db.query.portfoliosTable.findFirst({
-      where: eq(portfoliosTable.userId, req.userId),
-      with: { items: { orderBy: (items: any, { asc }: any) => [asc(items.order), asc(items.createdAt)] } },
-    });
-    if (!portfolio) {
-      return res.status(404).json({ error: "Portfolio not found" });
-    }
-    return res.json(portfolio);
-  } catch (err) {
-    req.log.error({ err }, "Failed to get portfolio");
-    return res.status(500).json({ error: "Internal server error" });
-  }
+const portfolioStore = new Map<string, any>();
+let nextId = 100;
+
+const DEMO_PORTFOLIO = {
+  id: 1,
+  userId: "demo",
+  username: "demo",
+  displayName: "Alex Chen",
+  tagline: "Full-Stack Developer & Open Source Contributor",
+  bio: "Building things on the internet. Passionate about developer experience, performance, and elegant code.",
+  email: "alex@example.com",
+  location: "San Francisco, CA",
+  avatarUrl: null,
+  theme: "retro",
+  skills: ["TypeScript", "React", "Node.js", "PostgreSQL", "Docker", "AWS"],
+  socialLinks: { github: "https://github.com", twitter: "https://twitter.com" },
+  isPublic: true,
+  items: [
+    {
+      id: 1, portfolioId: 1, type: "experience",
+      title: "Senior Software Engineer", subtitle: "Acme Corp",
+      description: "Led a team of 5 engineers building high-performance APIs serving 10M+ requests/day.",
+      startDate: "2022-01", endDate: null, isCurrent: true,
+      tags: ["TypeScript", "Node.js", "Kubernetes"], url: null, order: 0,
+    },
+    {
+      id: 2, portfolioId: 1, type: "project",
+      title: "OpenMetrics", subtitle: "Open Source",
+      description: "A lightweight observability library for Node.js. 2.3k GitHub stars.",
+      startDate: "2021-06", endDate: null, isCurrent: true,
+      tags: ["Node.js", "Prometheus", "TypeScript"], url: "https://github.com", order: 1,
+    },
+    {
+      id: 3, portfolioId: 1, type: "education",
+      title: "B.S. Computer Science", subtitle: "UC Berkeley",
+      description: "Graduated with honors. Focused on distributed systems and algorithms.",
+      startDate: "2016-08", endDate: "2020-05", isCurrent: false,
+      tags: [], url: null, order: 2,
+    },
+  ],
+};
+
+router.get("/me", requireAuth, (req: any, res) => {
+  const p = portfolioStore.get(req.userId);
+  if (!p) return res.status(404).json({ error: "Portfolio not found" });
+  return res.json(p);
 });
 
-// POST /api/portfolio/me/create
-router.post("/me/create", requireAuth, async (req: any, res) => {
-  try {
-    const { username, displayName, tagline, bio, email, location, avatarUrl, theme, skills, socialLinks, isPublic } = req.body;
-    const [portfolio] = await db.insert(portfoliosTable).values({
-      userId: req.userId,
-      username,
-      displayName,
-      tagline,
-      bio,
-      email,
-      location,
-      avatarUrl,
-      theme: theme ?? "retro",
-      skills: skills ?? [],
-      socialLinks: socialLinks ?? {},
-      isPublic: isPublic ?? true,
-    }).returning();
-    return res.status(201).json(portfolio);
-  } catch (err: any) {
-    if (err?.code === "23505") {
-      return res.status(409).json({ error: "Username already taken" });
-    }
-    req.log.error({ err }, "Failed to create portfolio");
-    return res.status(500).json({ error: "Internal server error" });
-  }
+router.post("/me/create", requireAuth, (req: any, res) => {
+  const { username, displayName, tagline, bio, email, location, avatarUrl, theme, skills, socialLinks, isPublic } = req.body;
+  const portfolio = {
+    id: ++nextId, userId: req.userId, username, displayName, tagline, bio,
+    email, location, avatarUrl, theme: theme ?? "retro",
+    skills: skills ?? [], socialLinks: socialLinks ?? {},
+    isPublic: isPublic ?? true, items: [],
+  };
+  portfolioStore.set(req.userId, portfolio);
+  return res.status(201).json(portfolio);
 });
 
-// PUT /api/portfolio/me
-router.put("/me", requireAuth, async (req: any, res) => {
-  try {
-    const { username, displayName, tagline, bio, email, location, avatarUrl, theme, skills, socialLinks, isPublic } = req.body;
-    const [updated] = await db.update(portfoliosTable)
-      .set({ username, displayName, tagline, bio, email, location, avatarUrl, theme, skills, socialLinks, isPublic })
-      .where(eq(portfoliosTable.userId, req.userId))
-      .returning();
-    if (!updated) return res.status(404).json({ error: "Portfolio not found" });
-    return res.json(updated);
-  } catch (err: any) {
-    if (err?.code === "23505") {
-      return res.status(409).json({ error: "Username already taken" });
-    }
-    req.log.error({ err }, "Failed to update portfolio");
-    return res.status(500).json({ error: "Internal server error" });
-  }
+router.put("/me", requireAuth, (req: any, res) => {
+  const existing = portfolioStore.get(req.userId);
+  if (!existing) return res.status(404).json({ error: "Portfolio not found" });
+  const { username, displayName, tagline, bio, email, location, avatarUrl, theme, skills, socialLinks, isPublic } = req.body;
+  const updated = { ...existing, username, displayName, tagline, bio, email, location, avatarUrl, theme, skills, socialLinks, isPublic };
+  portfolioStore.set(req.userId, updated);
+  return res.json(updated);
 });
 
-// GET /api/portfolio/check/:username
-router.get("/check/:username", async (req, res) => {
-  try {
-    const { username } = req.params;
-    const existing = await db.query.portfoliosTable.findFirst({
-      where: eq(portfoliosTable.username, username),
-    });
-    return res.json({ available: !existing, username });
-  } catch (err) {
-    return res.status(500).json({ error: "Internal server error" });
-  }
+router.get("/check/:username", (req, res) => {
+  const { username } = req.params;
+  return res.json({ available: true, username });
 });
 
-// GET /api/portfolio/:username (public)
-router.get("/:username", async (req, res) => {
-  try {
-    const { username } = req.params;
-    const portfolio = await db.query.portfoliosTable.findFirst({
-      where: and(eq(portfoliosTable.username, username), eq(portfoliosTable.isPublic, true)),
-      with: { items: { orderBy: (items: any, { asc }: any) => [asc(items.order), asc(items.createdAt)] } },
-    });
-    if (!portfolio) return res.status(404).json({ error: "Portfolio not found" });
-    return res.json(portfolio);
-  } catch (err) {
-    return res.status(500).json({ error: "Internal server error" });
+router.get("/:username", (req, res) => {
+  const { username } = req.params;
+  if (username === "demo") return res.json(DEMO_PORTFOLIO);
+  for (const p of portfolioStore.values()) {
+    if (p.username === username && p.isPublic) return res.json(p);
   }
+  return res.status(404).json({ error: "Portfolio not found" });
 });
 
 export default router;
