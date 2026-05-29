@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PortfolioOS 2026</title>
+<title>Sinalytica — Terminal Portfolio Builder</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23000'/%3E%3Crect x='2' y='2' width='28' height='28' rx='3' fill='none' stroke='%2300ff41' stroke-width='2'/%3E%3Ctext x='5' y='23' font-size='19' fill='%2300ff41' font-family='monospace' font-weight='bold'%3ES%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Sinalytica — Build and share your terminal portfolio. Create a unique developer profile with a retro terminal aesthetic.">
+<meta property="og:title" content="Sinalytica — Terminal Portfolio Builder">
+<meta property="og:description" content="Build and share your terminal portfolio.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
@@ -28,12 +34,12 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
 /* SPLASH */
 #s-splash{background:#000;align-items:center;justify-content:center}
-.splash-box{border:2px solid var(--w);padding:clamp(24px,5vw,52px) clamp(28px,7vw,72px);max-width:min(520px,92vw)}
-.splash-t{font-size:clamp(13px,2.5vw,17px);letter-spacing:1px;margin-bottom:26px}
-.splash-w{color:var(--y);margin-bottom:18px;font-size:clamp(11px,2vw,13px);line-height:1.7}
-.splash-s{margin-bottom:18px;font-size:clamp(11px,2vw,13px)}
-.btn-t{background:transparent;border:2px solid var(--w);color:var(--w);font-family:inherit;font-size:clamp(11px,2vw,13px);letter-spacing:3px;padding:7px 30px;cursor:pointer;transition:.15s}
-.btn-t:hover{background:var(--w);color:var(--k)}
+.splash-box{border:2px solid #1c1c1c;padding:clamp(28px,5vw,54px) clamp(32px,7vw,76px);max-width:min(520px,92vw);width:100%}
+.logo-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:26px}
+.logo-mark{font-size:clamp(52px,12vw,76px);line-height:1;color:var(--g);letter-spacing:-6px}
+.logo-br{opacity:.4}.logo-name{font-size:clamp(9px,1.8vw,11px);letter-spacing:10px;color:rgba(255,255,255,.4);margin-top:8px}
+.splash-tagline{font-size:clamp(11px,2.2vw,14px);color:rgba(255,255,255,.7);text-align:center;margin-bottom:6px}.splash-divider{border:none;border-top:1px solid #1a1a1a;margin:18px 0}.splash-feats{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}.splash-feat{font-size:clamp(10px,1.8vw,12px);color:#444}.splash-feat::before{content:"> ";color:var(--g);opacity:.6}.splash-start{display:flex;flex-direction:column;align-items:center;gap:14px}.splash-foot{font-size:10px;color:#2a2a2a;letter-spacing:3px}.btn-t{background:transparent;border:2px solid var(--g);color:var(--g);font-family:inherit;font-size:clamp(11px,2vw,13px);letter-spacing:4px;padding:9px 36px;cursor:pointer;transition:.15s;width:100%;text-align:center}
+.btn-t:hover,.btn-t:active{background:var(--g);color:var(--k)}
 
 /* DESK */
 #s-desk{background:#c8c3bc;align-items:center;justify-content:center;cursor:pointer;position:relative}
@@ -52,7 +58,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
 /* WIN95 */
 .w95{position:absolute;background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;box-shadow:2px 2px 10px rgba(0,0,0,.6);display:flex;flex-direction:column}
-.w95-tb{background:linear-gradient(90deg,#000080,#1084d0);color:#fff;padding:3px 6px;display:flex;align-items:center;gap:6px;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;cursor:move;flex-shrink:0;user-select:none}
+.w95-tb{background:linear-gradient(90deg,#000080,#1084d0);color:#fff;padding:3px 6px;display:flex;align-items:center;gap:6px;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;cursor:move;flex-shrink:0;user-select:none;touch-action:none}
 .w95-btns{margin-left:auto;display:flex;gap:2px}
 .w95-btn{width:16px;height:14px;background:#c0c0c0;border:1px solid;border-color:#fff #404040 #404040 #fff;font-size:9px;font-family:Arial;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#000;font-weight:bold}
 .w95-btn:active{border-color:#404040 #fff #fff #404040}
@@ -77,7 +83,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
 /* DASH LAYOUT */
 .dl{display:grid;grid-template-columns:200px 1fr;height:100%}
-@media(max-width:560px){.dl{grid-template-columns:1fr}}
+@media(max-width:560px){.dl{grid-template-columns:1fr}}@media(max-width:560px){.d-side{display:none}}
 .d-side{background:#050505;border-right:1px solid #222;display:flex;flex-direction:column;padding:10px;gap:10px;overflow-y:auto}
 .d-sh{color:var(--y);font-size:10px;letter-spacing:2px;border-bottom:1px solid #222;padding-bottom:6px}
 .pi{padding:7px 9px;border:1px solid #1a1a1a;cursor:pointer;font-size:11px;transition:.1s}
@@ -143,10 +149,22 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <!-- SPLASH -->
 <div class="scr" id="s-splash">
   <div class="splash-box">
-    <p class="splash-t">PortfolioOS 2026</p>
-    <p class="splash-w">WARNING: This experience is best viewed on<br>a desktop or laptop computer.</p>
-    <p class="splash-s">Click start to begin</p>
-    <button class="btn-t" id="btn-start">START</button>
+    <div class="logo-wrap">
+      <div class="logo-mark"><span class="logo-br">{</span>S<span class="logo-br">}</span></div>
+      <div class="logo-name">SINALYTICA</div>
+    </div>
+    <p class="splash-tagline">Build your terminal portfolio.</p>
+    <hr class="splash-divider">
+    <div class="splash-feats">
+      <div class="splash-feat">Create a unique developer profile</div>
+      <div class="splash-feat">Export as standalone HTML file</div>
+      <div class="splash-feat">Share with a single link</div>
+    </div>
+    <hr class="splash-divider">
+    <div class="splash-start">
+      <button class="btn-t" id="btn-start">[ START TERMINAL ]</button>
+      <div class="splash-foot">sinalytica.fun</div>
+    </div>
   </div>
 </div>
 
@@ -177,7 +195,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <rect x="163" y="145" width="174" height="97" fill="#cde8d0" rx="1"/>
     <!-- fake desktop content on screen -->
     <rect x="163" y="145" width="174" height="12" fill="#000080"/>
-    <text x="167" y="154" font-size="6" fill="#fff" font-family="Arial">PortfolioOS 2026</text>
+    <text x="163" y="154" font-size="6" fill="#fff" font-family="Arial">Sinalytica</text>
     <rect x="318" y="146" width="8" height="10" fill="#c0c0c0"/>
     <rect x="327" y="146" width="8" height="10" fill="#c0c0c0"/>
     <text x="170" y="175" font-size="9" fill="#003300" font-family="monospace" font-weight="bold">$ whoami</text>
@@ -269,7 +287,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <!-- LOGIN WIN -->
   <div class="w95" id="wl">
     <div class="w95-tb" id="wl-tb">
-      <span style="font-size:14px">🖥️</span> PortfolioOS — Login
+      <span style="font-size:14px">🖥️</span> Sinalytica — Login
       <div class="w95-btns">
         <div class="w95-btn">_</div><div class="w95-btn">□</div>
         <div class="w95-btn" onclick="el('wl').style.display='none'">✕</div>
@@ -277,10 +295,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     </div>
     <div class="w95-body">
       <div class="term" id="login-term">
-        <div class="to w" style="letter-spacing:1px;margin-bottom:2px">PortfolioOS Login — v2.0.26</div>
+        <div class="to w" style="letter-spacing:1px;margin-bottom:2px">Sinalytica — Terminal Login</div>
         <div class="to d" style="margin-bottom:10px">──────────────────────────────</div>
         <div id="lform">
-          <div class="to g" style="margin-bottom:8px">Build and share your terminal portfolio.</div>
+          <div class="to g" style="margin-bottom:8px">Sign in to build and share your terminal portfolio.</div>
           <div class="t-row"><span class="t-pr">login:~$</span><input class="t-in" id="iu" type="text" placeholder="email or username" autocomplete="off"></div>
           <div class="t-row" style="margin-bottom:10px"><span class="t-pr">passwd:~$</span><input class="t-in" id="ip" type="password" placeholder="password (any)"></div>
           <div class="to r" id="lerr" style="display:none;margin-bottom:6px"></div>
@@ -293,7 +311,6 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
             <button class="soc-btn" onclick="socialLogin('google')">[ 🔵 GOOGLE ]</button>
             <button class="soc-btn" onclick="socialLogin('github')">[ ⚫ GITHUB ]</button>
           </div>
-          <div class="to d" style="font-size:10px;margin-top:12px">Any credentials work — this is a demo.</div>
         </div>
         <div id="lok" style="display:none">
           <div class="to g">✓ Authentication successful.</div>
@@ -307,7 +324,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <!-- DASHBOARD WIN -->
   <div class="w95" id="wd" style="display:none">
     <div class="w95-tb" id="wd-tb">
-      <span style="font-size:14px">📁</span> My Portfolios — PortfolioOS
+      <span style="font-size:14px">📁</span> My Portfolios — Sinalytica
       <div class="w95-btns">
         <div class="w95-btn">_</div><div class="w95-btn">□</div>
         <div class="w95-btn" onclick="el('wd').style.display='none'">✕</div>
@@ -392,7 +409,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
   <!-- TASKBAR -->
   <div id="tb">
-    <button class="tb-s">⊞ Start</button>
+    <button class="tb-s"><span style="color:#000080;font-family:monospace">{S}</span> Sinalytica</button>
     <div class="tb-sep"></div>
     <div class="tb-btn" id="tbl" onclick="togW('wl')">🖥️ Login</div>
     <div class="tb-btn" id="tbd" onclick="togW('wd')">📁 Portfolios</div>
@@ -408,23 +425,27 @@ let S={user:null,ports:[],active:null,theme:'green'};
 function el(id){return document.getElementById(id)}
 window.el=el;
 
+function b64enc(str){try{return btoa(String.fromCharCode(...new Uint8Array(new TextEncoder().encode(str))));}catch(e){return btoa(unescape(encodeURIComponent(str)));}}
+function b64dec(str){try{return new TextDecoder().decode(new Uint8Array([...atob(str)].map(c=>c.charCodeAt(0))));}catch(e){return decodeURIComponent(escape(atob(str)));}}
+
 // ── BOOT ──
 const BOOT=[
   {t:'',c:'gap'},{t:'',c:'gap'},
-  {t:'PORTFOLIOOS  v2.0.26',c:'title'},
-  {t:'Copyright (C) 2026 PortfolioOS Inc.',c:'dim'},
+  {t:'SINALYTICA  v1.0',c:'title'},
+  {t:'Copyright (C) 2026 Sinalytica',c:'dim'},
   {t:'',c:'gap'},
   {t:'CPU: CreativeProcessor X4 @ 3.6GHz',c:'ok'},
   {t:'Memory Test: 8192MB',c:'ok'},
   {t:'Initializing portfolio engine',c:'ok'},
   {t:'Loading terminal renderer',c:'ok'},
   {t:'Mounting creative file system',c:'ok'},
+  {t:'Connecting to sinalytica.fun',c:'ok'},
   {t:'Starting network services',c:'ok'},
   {t:'',c:'gap'},
   {t:'WARNING: No existing portfolio detected.',c:'warn'},
   {t:'WARNING: Terminal theme set to GREEN.',c:'warn'},
   {t:'',c:'gap'},
-  {t:'Starting PortfolioOS...',c:'ok'},
+  {t:'Starting Sinalytica...',c:'ok'},
   {t:'',c:'gap'},
 ];
 const boot=el('s-boot');
@@ -483,7 +504,7 @@ function doLogin(u){
   completeLogin(user);
 }
 window.doLogin=doLogin;
-window.demoLogin=function(){completeLogin('demo@portfolioos.dev');};
+window.demoLogin=function(){completeLogin('demo@sinalytica.fun');};
 window.socialLogin=function(p){completeLogin(p==='google'?'user@gmail.com':'dev@github.com');};
 
 function completeLogin(user){
@@ -510,7 +531,7 @@ window.openDash=function(){
   el('cu').textContent=S.user||'?';
   renderList();makeDrag(w,el('wd-tb'));
 };
-window.openHelp=function(){alert('PortfolioOS 2026\n\nDouble-click desktop icons to open windows.\nCreate your terminal portfolio and export as HTML.');};
+window.openHelp=function(){alert('Sinalytica v1.0\n\nBuild and share your terminal portfolio.\n\nDouble-click desktop icons to open windows.\nCreate your portfolio in Edit tab, preview it,\nthen export or share with a single link.\n\nCtrl+S  — save portfolio\nCtrl+L  — new portfolio');};
 
 function renderList(){
   const list=el('plist');list.innerHTML='';
@@ -648,42 +669,48 @@ window.dlHTML=function(){
 
 // ── SHARE LINK ──
 window.genLink=function(){
+  if(S.active===null){alert('Select or create a portfolio first.');return;}
   const data={n:el('fn').value,t:el('ft').value,b:el('fb').value,sk:el('fsk').value,p:el('fp').value,c:el('fc').value,th:S.theme};
-  const enc=btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  const enc=b64enc(JSON.stringify(data));
   const url=location.origin+location.pathname+'#p='+enc;
   el('sbox').textContent=url;el('cpbtn').style.display='inline-flex';
   el('cpbtn').setAttribute('data-url',url);
 };
 window.cpLink=function(){
-  const url=el('cpbtn').getAttribute('data-url');
-  navigator.clipboard.writeText(url).then(()=>{
-    el('cpbtn').textContent='COPIED!';setTimeout(()=>el('cpbtn').textContent='COPY LINK',2000);
-  });
+  const url=el('cpbtn').getAttribute('data-url');if(!url)return;
+  if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>{el('cpbtn').textContent='COPIED!';setTimeout(()=>el('cpbtn').textContent='COPY LINK',2000);}).catch(()=>{prompt('Copy this link:',url);});}
+  else{prompt('Copy this link:',url);}
 };
 
 // ── WINDOW HELPERS ──
 window.togW=function(id){const w=el(id);w.style.display=w.style.display==='none'?'flex':'none';};
 function makeDrag(win,handle){
   if(!handle)return;let sx,sy,sl,st;
+  function startPos(cx,cy){sx=cx;sy=cy;const r=win.getBoundingClientRect();sl=r.left;st=r.top;win.style.transform='none';win.style.left=sl+'px';win.style.top=st+'px';win.style.right='auto';win.style.bottom='auto';}
   handle.addEventListener('mousedown',e=>{
     if(e.target.classList.contains('w95-btn'))return;
-    sx=e.clientX;sy=e.clientY;
-    const r=win.getBoundingClientRect();sl=r.left;st=r.top;
-    win.style.transform='none';win.style.left=sl+'px';win.style.top=st+'px';win.style.right='auto';win.style.bottom='auto';
+    startPos(e.clientX,e.clientY);
     function mv(e){win.style.left=(sl+e.clientX-sx)+'px';win.style.top=(st+e.clientY-sy)+'px';}
     function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
     document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
   });
+  handle.addEventListener('touchstart',e=>{
+    if(e.target.classList.contains('w95-btn'))return;
+    const tc=e.touches[0];startPos(tc.clientX,tc.clientY);
+    function mv(e){e.preventDefault();const tc=e.touches[0];win.style.left=(sl+tc.clientX-sx)+'px';win.style.top=(st+tc.clientY-sy)+'px';}
+    function up(){handle.removeEventListener('touchmove',mv);handle.removeEventListener('touchend',up);}
+    handle.addEventListener('touchmove',mv,{passive:false});handle.addEventListener('touchend',up);
+  },{passive:true});
 }
 
 // ── SHARED PORTFOLIO VIEW ──
 function checkHash(){
   if(!location.hash.startsWith('#p='))return false;
   try{
-    const data=JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(3)))));
+    const data=JSON.parse(b64dec(location.hash.slice(3)));
     const color=THEMES[data.th]||THEMES.green;
     document.querySelectorAll('.scr').forEach(s=>{s.classList.remove('on');s.style.display='none';});
-    document.body.innerHTML='<div style="min-height:100vh;background:#000;display:flex;align-items:center;justify-content:center;padding:40px 20px;font-family:\'Share Tech Mono\',\'Courier New\',monospace"><div id="so" style="max-width:740px;width:100%"></div></div>';
+    document.body.innerHTML='<div style="min-height:100vh;background:#000;display:flex;align-items:center;justify-content:center;padding:40px 20px;font-family:\'Share Tech Mono\',\'Courier New\',monospace"><div style="max-width:740px;width:100%"><div id="so"></div><div style="margin-top:40px;font-size:10px;color:#222;letter-spacing:2px">made with sinalytica.fun</div></div></div>';
     const o=document.getElementById('so');
     const items=[
       ['$ ','whoami'],['  ',data.n||'','val'],['  ',data.t||'','dim'],['',''],
@@ -708,6 +735,9 @@ function checkHash(){
 // ── INIT ──
 function init(){
   if(checkHash())return;
+  el('iu').addEventListener('keydown',e=>{if(e.key==='Enter')el('ip').focus();});
+  el('ip').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();if(S.user)window.savePort();}});
   const su=localStorage.getItem('pos_u');
   if(su){S.user=su;try{S.ports=JSON.parse(localStorage.getItem('pos_p_'+su)||'[]');}catch{S.ports=[];}}
   runBoot();
