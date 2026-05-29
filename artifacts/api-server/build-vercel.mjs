@@ -1,23 +1,50 @@
 /**
- * Bundles the Express API handler into api/index.js for Vercel serverless.
+ * Bundles the Express API handler and writes it to the Vercel Build Output API
+ * structure so it's properly registered as a serverless function.
+ *
  * Run via: pnpm --filter @workspace/api-server exec node build-vercel.mjs
- * (Runs from artifacts/api-server/, so ../../api/ = workspace root api/)
+ * (Runs from artifacts/api-server/, so ../../ = workspace root)
+ *
+ * Vercel Build Output API docs:
+ *   https://vercel.com/docs/build-output-api/v3
  */
 import { build } from 'esbuild';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
 
 globalThis.require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '../..');
+
+// Vercel Build Output API: functions go in /vercel/output/functions/<route>.func/
+// Fallback: write to project root api/ for local/non-Vercel builds
+const vercelOutput = process.env.VERCEL_OUTPUT || '/vercel/output';
+const isVercel = existsSync(vercelOutput);
+
+let outDir;
+let outFile;
+
+if (isVercel) {
+  outDir = path.join(vercelOutput, 'functions/api/index.func');
+  outFile = path.join(outDir, 'index.js');
+} else {
+  // Local fallback: write to api/index.js in repo root
+  outDir = path.join(root, 'api');
+  outFile = path.join(outDir, 'index.js');
+}
+
+mkdirSync(outDir, { recursive: true });
+
+console.log(`Building API handler → ${outFile}`);
 
 await build({
   entryPoints: [path.join(root, 'api/_handler.ts')],
   platform: 'node',
   bundle: true,
   format: 'cjs',
-  outfile: path.join(root, 'api/index.js'),
+  outfile: outFile,
   logLevel: 'info',
   sourcemap: false,
   external: [
@@ -33,16 +60,33 @@ await build({
   define: {
     'process.env.NODE_ENV': '"production"',
   },
-  // CJS interop for ESM-only packages bundled into CJS output
-  banner: {
-    js: `
-const { createRequire: __cjsCrReq } = require('module');
-const __cjsRequire = __cjsCrReq(typeof __filename !== 'undefined' ? 'file://' + __filename : import.meta.url);
-`,
-  },
 }).catch((e) => {
   console.error('esbuild failed:', e.message);
   process.exit(1);
 });
 
-console.log('✓ api/index.js built for Vercel serverless');
+if (isVercel) {
+  // Write Vercel function config
+  const vcConfig = {
+    runtime: 'nodejs22.x',
+    handler: 'index.js',
+    launcherType: 'Nodejs',
+    shouldAddHelpers: true,
+  };
+  writeFileSync(path.join(outDir, '.vc-config.json'), JSON.stringify(vcConfig, null, 2));
+
+  // Write the top-level routes config so Vercel knows how to route requests
+  const configPath = path.join(vercelOutput, 'config.json');
+  const config = {
+    version: 3,
+    routes: [
+      { src: '/api/(.*)', dest: '/api/index' },
+      { handle: 'filesystem' },
+      { src: '/(.*)', dest: '/index.html' },
+    ],
+  };
+  writeFileSync(configPath, JSON.stringify(config, null, 2));
+  console.log('✓ Vercel Build Output API: function + config written');
+} else {
+  console.log('✓ api/index.js built (local mode)');
+}
