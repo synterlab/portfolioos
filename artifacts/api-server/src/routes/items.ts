@@ -12,7 +12,7 @@ const requireAuth = (req: any, res: any, next: any) => {
     return res.status(401).json({ error: "Unauthorized" });
   }
   req.userId = userId;
-  next();
+  return next();
 };
 
 const getPortfolioId = async (userId: string) => {
@@ -28,10 +28,10 @@ router.get("/", requireAuth, async (req: any, res) => {
     const portfolioId = await getPortfolioId(req.userId);
     if (!portfolioId) return res.status(404).json({ error: "Portfolio not found" });
     const items = await db.select().from(portfolioItemsTable).where(eq(portfolioItemsTable.portfolioId, portfolioId));
-    res.json(items);
+    return res.json(items);
   } catch (err) {
     req.log.error({ err }, "Failed to get items");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -54,10 +54,10 @@ router.post("/", requireAuth, async (req: any, res) => {
       url,
       order: order ?? 0,
     }).returning();
-    res.status(201).json(item);
+    return res.status(201).json(item);
   } catch (err) {
     req.log.error({ err }, "Failed to create item");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -72,10 +72,10 @@ router.put("/:id", requireAuth, async (req: any, res) => {
       .where(eq(portfolioItemsTable.id, parseInt(req.params.id)))
       .returning();
     if (!updated) return res.status(404).json({ error: "Item not found" });
-    res.json(updated);
+    return res.json(updated);
   } catch (err) {
     req.log.error({ err }, "Failed to update item");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -83,10 +83,10 @@ router.put("/:id", requireAuth, async (req: any, res) => {
 router.delete("/:id", requireAuth, async (req: any, res) => {
   try {
     await db.delete(portfolioItemsTable).where(eq(portfolioItemsTable.id, parseInt(req.params.id)));
-    res.status(204).send();
+    return res.status(204).send();
   } catch (err) {
     req.log.error({ err }, "Failed to delete item");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
