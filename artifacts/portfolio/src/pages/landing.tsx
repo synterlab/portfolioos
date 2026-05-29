@@ -120,8 +120,7 @@ export default function Landing() {
 
           {/* Headline */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <SinalyticaLogo size={72} />
-            <h1 style={{ fontSize: "clamp(36px, 7vw, 72px)", fontWeight: 900, lineHeight: 1.05, margin: "20px 0 0", color: "#fff", letterSpacing: "-2px" }}>
+            <h1 style={{ fontSize: "clamp(36px, 7vw, 72px)", fontWeight: 900, lineHeight: 1.05, margin: "8px 0 0", color: "#fff", letterSpacing: "-2px" }}>
               Your career as a<br />
               <span style={{ color: "#00ff41" }}>terminal experience</span>
             </h1>
@@ -234,8 +233,7 @@ export default function Landing() {
           viewport={{ once: true }}
           style={{ maxWidth: 520, margin: "0 auto" }}
         >
-          <SinalyticaLogo size={48} />
-          <h2 style={{ fontSize: "clamp(24px, 4vw, 38px)", fontWeight: 900, color: "#fff", marginTop: 20, marginBottom: 12, letterSpacing: "-1px" }}>Ready to be remembered?</h2>
+          <h2 style={{ fontSize: "clamp(24px, 4vw, 38px)", fontWeight: 900, color: "#fff", marginTop: 0, marginBottom: 12, letterSpacing: "-1px" }}>Ready to be remembered?</h2>
           <p style={{ color: "#555", marginBottom: 32, fontSize: 15 }}>Create your terminal portfolio today. Free to start, no credit card required.</p>
           <Link href="/sign-up" data-testid="link-cta-bottom">
             <button
