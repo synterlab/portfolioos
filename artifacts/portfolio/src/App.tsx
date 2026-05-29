@@ -1,11 +1,11 @@
-import { useEffect, useRef } from "react";
 import { ClerkProvider, SignIn, SignUp, Show, useClerk } from '@clerk/react';
 import { publishableKeyFromHost } from '@clerk/react/internal';
 import { shadcn } from '@clerk/themes';
 import { Switch, Route, useLocation, Redirect, Router as WouterRouter } from 'wouter';
-import { QueryClientProvider, useQueryClient, QueryClient } from "@tanstack/react-query";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 
+import DemoIntro from "@/pages/demo-intro";
 import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import PublicPortfolio from "@/pages/public-portfolio";
@@ -15,7 +15,6 @@ const clerkPubKey =
   publishableKeyFromHost(window.location.hostname, import.meta.env.VITE_CLERK_PUBLISHABLE_KEY) ||
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
-// Only use proxy if explicitly configured and non-empty
 const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL || undefined;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -94,7 +93,8 @@ function ClerkProviderWithRoutes() {
     >
       <QueryClientProvider client={queryClient}>
         <Switch>
-          <Route path="/" component={HomeRedirect} />
+          <Route path="/" component={DemoIntro} />
+          <Route path="/home" component={HomeRedirect} />
           <Route path="/sign-in/*?" component={SignInPage} />
           <Route path="/sign-up/*?" component={SignUpPage} />
           <Route path="/dashboard" component={DashboardRoute} />
