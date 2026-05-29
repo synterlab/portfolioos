@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PortfolioOS 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--g:#00ff41;--y:#ffe600;--w:#fff;--k:#000;--gr:#555;--c:#00ffff;--r:#ff4444}
+html,body{height:100%;overflow:hidden;background:var(--k);color:var(--w);font-family:'Share Tech Mono','Courier New',monospace;font-size:14px;line-height:1.6}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);pointer-events:none;z-index:9999}
+
+/* SCREENS */
+.scr{position:fixed;inset:0;display:none;flex-direction:column}
+.scr.on{display:flex}
+
+/* BOOT */
+#s-boot{padding:clamp(16px,4vw,44px);justify-content:flex-start;overflow:hidden;background:#000}
+.bl{opacity:0;white-space:pre-wrap;font-size:clamp(11px,1.8vw,13px)}
+.bl.v{opacity:1}
+.bl.ok::after{content:' [OK]';color:var(--g)}
+.bl.warn{color:var(--y)}
+.bl.title{color:var(--w);font-size:clamp(18px,4vw,28px);letter-spacing:4px;font-weight:bold}
+.bl.dim{color:#333}
+.bl.gap{height:.9em}
+
+/* SPLASH */
+#s-splash{background:#000;align-items:center;justify-content:center}
+.splash-box{border:2px solid var(--w);padding:clamp(24px,5vw,52px) clamp(28px,7vw,72px);max-width:min(520px,92vw)}
+.splash-t{font-size:clamp(13px,2.5vw,17px);letter-spacing:1px;margin-bottom:26px}
+.splash-w{color:var(--y);margin-bottom:18px;font-size:clamp(11px,2vw,13px);line-height:1.7}
+.splash-s{margin-bottom:18px;font-size:clamp(11px,2vw,13px)}
+.btn-t{background:transparent;border:2px solid var(--w);color:var(--w);font-family:inherit;font-size:clamp(11px,2vw,13px);letter-spacing:3px;padding:7px 30px;cursor:pointer;transition:.15s}
+.btn-t:hover{background:var(--w);color:var(--k)}
+
+/* DESK */
+#s-desk{background:#c8c3bc;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.desk-hint{position:absolute;bottom:50px;left:50%;transform:translateX(-50%);background:#000;color:#fff;font-family:'Share Tech Mono',monospace;font-size:clamp(10px,1.8vw,13px);padding:6px 18px;white-space:nowrap}
+.blink{animation:blink 1.1s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* OS */
+#s-os{background:#008080;position:relative;overflow:hidden}
+
+/* Desktop icons */
+.icons{position:absolute;top:14px;left:14px;display:flex;flex-direction:column;gap:18px}
+.icon{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;width:64px}
+.icon-img{font-size:26px;line-height:1}
+.icon span{font-size:10px;color:#fff;text-align:center;font-family:Arial,sans-serif;text-shadow:1px 1px 2px #000}
+
+/* WIN95 */
+.w95{position:absolute;background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;box-shadow:2px 2px 10px rgba(0,0,0,.6);display:flex;flex-direction:column}
+.w95-tb{background:linear-gradient(90deg,#000080,#1084d0);color:#fff;padding:3px 6px;display:flex;align-items:center;gap:6px;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;cursor:move;flex-shrink:0;user-select:none}
+.w95-btns{margin-left:auto;display:flex;gap:2px}
+.w95-btn{width:16px;height:14px;background:#c0c0c0;border:1px solid;border-color:#fff #404040 #404040 #fff;font-size:9px;font-family:Arial;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#000;font-weight:bold}
+.w95-btn:active{border-color:#404040 #fff #fff #404040}
+.w95-body{flex:1;overflow:auto}
+
+/* TERMINAL */
+.term{background:#000;color:var(--g);font-family:'Share Tech Mono','Courier New',monospace;font-size:13px;padding:14px 16px;min-height:200px;overflow-y:auto}
+.to{margin-bottom:3px}
+.to.g{color:var(--g)}.to.y{color:var(--y)}.to.w{color:var(--w)}.to.d{color:#444}.to.r{color:var(--r)}.to.c{color:var(--c)}
+.t-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.t-pr{color:var(--g)}
+.t-in{background:transparent;border:none;outline:none;color:#fff;font-family:inherit;font-size:13px;flex:1;caret-color:var(--g)}
+.soc-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.soc-btn{border:1px solid var(--g);background:transparent;color:var(--g);font-family:inherit;font-size:11px;padding:4px 10px;cursor:pointer;transition:.1s;letter-spacing:.5px}
+.soc-btn:hover{background:var(--g);color:#000}
+
+/* WIN LOGIN */
+#wl{top:50%;left:50%;transform:translate(-50%,-50%);width:min(500px,96vw)}
+
+/* WIN DASH */
+#wd{top:14px;left:14px;right:14px;bottom:38px;width:auto;height:calc(100vh - 52px);display:none}
+
+/* DASH LAYOUT */
+.dl{display:grid;grid-template-columns:200px 1fr;height:100%}
+@media(max-width:560px){.dl{grid-template-columns:1fr}}
+.d-side{background:#050505;border-right:1px solid #222;display:flex;flex-direction:column;padding:10px;gap:10px;overflow-y:auto}
+.d-sh{color:var(--y);font-size:10px;letter-spacing:2px;border-bottom:1px solid #222;padding-bottom:6px}
+.pi{padding:7px 9px;border:1px solid #1a1a1a;cursor:pointer;font-size:11px;transition:.1s}
+.pi:hover,.pi.act{border-color:var(--g);background:#001100}
+.pi-n{color:var(--g)}.pi-d{color:#333;font-size:10px}
+.btn-n{background:transparent;border:1px solid var(--g);color:var(--g);font-family:inherit;font-size:11px;padding:7px;cursor:pointer;letter-spacing:1px;text-align:center;transition:.1s}
+.btn-n:hover{background:var(--g);color:#000}
+
+.d-main{background:#000;display:flex;flex-direction:column;overflow:hidden}
+.d-tabs{display:flex;border-bottom:1px solid #1a1a1a;background:#050505;flex-shrink:0}
+.d-tab{padding:7px 14px;font-size:11px;color:#444;cursor:pointer;border-right:1px solid #111;transition:.1s;letter-spacing:1px}
+.d-tab:hover{color:#fff}.d-tab.act{color:var(--g);border-bottom:2px solid var(--g)}
+.d-pnl{flex:1;display:none;overflow-y:auto}
+.d-pnl.act{display:flex;flex-direction:column}
+
+/* EDIT FORM */
+.eform{padding:18px;display:flex;flex-direction:column;gap:14px}
+.ff{display:flex;flex-direction:column;gap:3px}
+.fl{color:var(--y);font-size:10px;letter-spacing:2px}
+.fi,.fta{background:#080808;border:1px solid #222;color:#fff;font-family:'Share Tech Mono',monospace;font-size:12px;padding:7px 9px;outline:none;border-radius:0;transition:.1s;width:100%}
+.fi:focus,.fta:focus{border-color:var(--g)}
+.fta{resize:vertical;min-height:70px}
+.themes{display:flex;gap:6px;flex-wrap:wrap}
+.th-opt{border:2px solid #222;padding:5px 12px;cursor:pointer;font-size:11px;font-family:inherit;background:transparent;transition:.1s;letter-spacing:1px}
+.th-opt.sel{border-color:currentColor}
+.f-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.btn-g{border:1px solid var(--g);background:transparent;color:var(--g);font-family:inherit;font-size:11px;padding:7px 16px;cursor:pointer;letter-spacing:1px;transition:.1s}
+.btn-g:hover{background:var(--g);color:#000}
+.btn-y{border:1px solid var(--y);background:transparent;color:var(--y);font-family:inherit;font-size:11px;padding:7px 16px;cursor:pointer;letter-spacing:1px;transition:.1s}
+.btn-y:hover{background:var(--y);color:#000}
+.btn-d{border:1px solid #555;background:transparent;color:#555;font-family:inherit;font-size:11px;padding:7px 16px;cursor:pointer;letter-spacing:1px;transition:.1s}
+.btn-d:hover{background:#555;color:#000}
+.msg-ok{color:var(--g);font-size:11px;display:none}.msg-ok.s{display:block}
+
+/* PREVIEW */
+.prev-frame{margin:16px;border:1px solid #1a1a1a;background:#000;flex:1;padding:18px;overflow-y:auto;min-height:220px;font-family:'Share Tech Mono',monospace;font-size:13px}
+.prev-line{display:block;margin:2px 0}
+
+/* EXPORT */
+.exp-card{margin:16px;border:1px solid #1a1a1a;padding:14px;background:#050505;display:flex;flex-direction:column;gap:10px}
+.exp-t{color:var(--g);font-size:11px;letter-spacing:1px}
+.exp-d{color:#444;font-size:11px;line-height:1.6}
+.share-box{background:#000;border:1px solid #222;padding:7px;font-size:10px;color:#555;word-break:break-all;min-height:32px}
+
+/* TASKBAR */
+#tb{position:absolute;bottom:0;left:0;right:0;height:34px;background:#c0c0c0;border-top:2px solid #fff;display:flex;align-items:center;padding:2px 4px;gap:4px;z-index:100}
+.tb-s{height:26px;background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;padding:0 10px 0 6px;font-family:Arial,sans-serif;font-size:12px;font-weight:bold;cursor:pointer;display:flex;align-items:center;gap:5px;color:#000}
+.tb-s:active{border-color:#404040 #fff #fff #404040}
+.tb-sep{width:1px;height:20px;background:#808080;margin:0 2px}
+.tb-clk{margin-left:auto;background:#c0c0c0;border:1px solid;border-color:#404040 #fff #fff #404040;padding:2px 8px;font-family:Arial,sans-serif;font-size:11px;color:#000}
+.tb-btn{height:26px;background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;padding:0 10px;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:4px;color:#000;max-width:140px;overflow:hidden;white-space:nowrap;display:none}
+
+/* FADE */
+@keyframes fadeOut{to{opacity:0;pointer-events:none}}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#111}::-webkit-scrollbar-thumb{background:#333}
+</style>
+</head>
+<body>
+
+<!-- BOOT -->
+<div class="scr on" id="s-boot"></div>
+
+<!-- SPLASH -->
+<div class="scr" id="s-splash">
+  <div class="splash-box">
+    <p class="splash-t">PortfolioOS 2026</p>
+    <p class="splash-w">WARNING: This experience is best viewed on<br>a desktop or laptop computer.</p>
+    <p class="splash-s">Click start to begin</p>
+    <button class="btn-t" id="btn-start">START</button>
+  </div>
+</div>
+
+<!-- DESK -->
+<div class="scr" id="s-desk">
+  <svg viewBox="0 0 700 580" width="min(700px,96vw)" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 20px 40px rgba(0,0,0,.3))">
+    <!-- floor shadow -->
+    <ellipse cx="350" cy="560" rx="300" ry="14" fill="rgba(0,0,0,.15)"/>
+    <!-- desk top -->
+    <polygon points="80,300 620,300 560,360 20,360" fill="#4a3520"/>
+    <polygon points="20,360 560,360 560,430 20,430" fill="#3a2818"/>
+    <polygon points="20,360 80,300 80,375 20,430" fill="#2c1e10"/>
+    <!-- left drawer unit -->
+    <rect x="30" y="368" width="130" height="58" fill="#3a2818"/>
+    <rect x="35" y="374" width="118" height="22" fill="#4a3520"/><rect x="81" y="383" width="22" height="4" fill="#aaa" rx="2"/>
+    <rect x="35" y="399" width="118" height="22" fill="#4a3520"/><rect x="81" y="408" width="22" height="4" fill="#aaa" rx="2"/>
+    <!-- legs -->
+    <rect x="28" y="427" width="14" height="70" fill="#777"/>
+    <rect x="548" y="427" width="14" height="70" fill="#777"/>
+    <!-- MONITOR stand -->
+    <ellipse cx="250" cy="303" rx="45" ry="10" fill="#555"/>
+    <rect x="242" y="238" width="16" height="66" fill="#666"/>
+    <!-- monitor body -->
+    <rect x="148" y="130" width="204" height="125" fill="#aaa" rx="5"/>
+    <!-- bezel -->
+    <rect x="158" y="140" width="184" height="107" fill="#111" rx="2"/>
+    <!-- screen -->
+    <rect x="163" y="145" width="174" height="97" fill="#cde8d0" rx="1"/>
+    <!-- fake desktop content on screen -->
+    <rect x="163" y="145" width="174" height="12" fill="#000080"/>
+    <text x="167" y="154" font-size="6" fill="#fff" font-family="Arial">PortfolioOS 2026</text>
+    <rect x="318" y="146" width="8" height="10" fill="#c0c0c0"/>
+    <rect x="327" y="146" width="8" height="10" fill="#c0c0c0"/>
+    <text x="170" y="175" font-size="9" fill="#003300" font-family="monospace" font-weight="bold">$ whoami</text>
+    <text x="170" y="187" font-size="8" fill="#006600" font-family="monospace">  your_name</text>
+    <text x="170" y="198" font-size="8" fill="#555" font-family="monospace">  Developer · Designer</text>
+    <text x="170" y="212" font-size="8" fill="#006600" font-family="monospace">$ ls skills/</text>
+    <text x="170" y="223" font-size="8" fill="#008800" font-family="monospace">  react/  node/  design/</text>
+    <text x="170" y="235" font-size="8" fill="#006600" font-family="monospace">$ █</text>
+    <!-- screen glare -->
+    <polygon points="163,145 240,145 163,210" fill="#fff" opacity="0.06"/>
+    <!-- monitor buttons -->
+    <rect x="318" y="238" width="6" height="6" fill="#777" rx="1"/>
+    <rect x="326" y="238" width="6" height="6" fill="#777" rx="1"/>
+    <circle cx="308" cy="241" r="4" fill="#444"/>
+    <!-- KEYBOARD -->
+    <rect x="165" y="307" width="155" height="62" fill="#bbb" rx="3"/>
+    <rect x="170" y="312" width="145" height="12" fill="#ccc" rx="1"/>
+    <rect x="172" y="327" width="141" height="11" fill="#ccc" rx="1"/>
+    <rect x="174" y="341" width="137" height="11" fill="#ccc" rx="1"/>
+    <rect x="180" y="355" width="95" height="10" fill="#ccc" rx="1"/>
+    <!-- key lines -->
+    <line x1="179" y1="312" x2="179" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="188" y1="312" x2="188" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="197" y1="312" x2="197" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="206" y1="312" x2="206" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="215" y1="312" x2="215" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="224" y1="312" x2="224" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="233" y1="312" x2="233" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="242" y1="312" x2="242" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="251" y1="312" x2="251" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="260" y1="312" x2="260" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="269" y1="312" x2="269" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="278" y1="312" x2="278" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="287" y1="312" x2="287" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="296" y1="312" x2="296" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <line x1="305" y1="312" x2="305" y2="324" stroke="#aaa" stroke-width="0.7"/>
+    <!-- MOUSE -->
+    <ellipse cx="348" cy="318" rx="19" ry="28" fill="#bbb"/>
+    <line x1="348" y1="291" x2="348" y2="303" stroke="#aaa" stroke-width="1.5"/>
+    <!-- COFFEE -->
+    <rect x="416" y="285" width="32" height="36" fill="#f5f2ee" rx="2"/>
+    <ellipse cx="432" cy="285" rx="16" ry="5" fill="#e5e0da"/>
+    <path d="M448,297 Q460,303 448,310" fill="none" stroke="#e5e0da" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="432" cy="288" rx="13" ry="3" fill="#3d1f00" opacity="0.6"/>
+    <path d="M425,278 Q422,268 425,258" fill="none" stroke="#ddd" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/>
+    <path d="M432,276 Q429,266 432,256" fill="none" stroke="#ddd" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/>
+    <path d="M439,278 Q436,268 439,258" fill="none" stroke="#ddd" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/>
+    <!-- PLANT -->
+    <polygon points="498,310 524,310 519,355 503,355" fill="#c05020"/>
+    <ellipse cx="511" cy="310" rx="13" ry="5" fill="#5a2e0e"/>
+    <line x1="511" y1="305" x2="505" y2="230" stroke="#1a7a1a" stroke-width="3.5"/>
+    <ellipse cx="480" cy="255" rx="34" ry="20" fill="#228822" transform="rotate(-25 480 255)"/>
+    <ellipse cx="525" cy="244" rx="30" ry="17" fill="#2a9922" transform="rotate(20 525 244)"/>
+    <ellipse cx="496" cy="228" rx="26" ry="15" fill="#33aa33" transform="rotate(-12 496 228)"/>
+    <ellipse cx="518" cy="235" rx="24" ry="13" fill="#44bb44" transform="rotate(18 518 235)"/>
+    <!-- PAPERS -->
+    <rect x="88" y="285" width="60" height="76" fill="#fefef5" transform="rotate(-6 88 285)"/>
+    <rect x="82" y="282" width="60" height="76" fill="#fffef0" transform="rotate(-10 82 282)"/>
+    <rect x="92" y="287" width="60" height="76" fill="#fff" transform="rotate(-2 92 287)"/>
+    <!-- paper text lines -->
+    <line x1="97" y1="300" x2="145" y2="297" stroke="#ddd" stroke-width="1"/>
+    <line x1="97" y1="308" x2="148" y2="305" stroke="#ddd" stroke-width="1"/>
+    <line x1="97" y1="316" x2="142" y2="313" stroke="#ddd" stroke-width="1"/>
+    <!-- CHAIR -->
+    <rect x="536" y="340" width="92" height="130" fill="#9a7222" rx="10"/>
+    <ellipse cx="582" cy="460" rx="60" ry="28" fill="#9a7222"/>
+    <rect x="574" y="476" width="18" height="55" fill="#777"/>
+    <ellipse cx="582" cy="536" rx="44" ry="10" fill="#555"/>
+    <line x1="582" y1="536" x2="545" y2="552" stroke="#555" stroke-width="5"/>
+    <line x1="582" y1="536" x2="619" y2="552" stroke="#555" stroke-width="5"/>
+    <line x1="582" y1="536" x2="542" y2="534" stroke="#555" stroke-width="5"/>
+    <line x1="582" y1="536" x2="622" y2="534" stroke="#555" stroke-width="5"/>
+    <rect x="520" y="392" width="13" height="50" fill="#7a5c10" rx="3"/>
+    <rect x="520" y="436" width="28" height="9" fill="#7a5c10" rx="3"/>
+    <rect x="629" y="392" width="13" height="50" fill="#7a5c10" rx="3"/>
+    <rect x="614" y="436" width="28" height="9" fill="#7a5c10" rx="3"/>
+  </svg>
+  <div class="desk-hint">Click anywhere to begin <span class="blink">_</span></div>
+</div>
+
+<!-- OS -->
+<div class="scr" id="s-os">
+  <div class="icons">
+    <div class="icon" ondblclick="openDash()"><div class="icon-img">📁</div><span>My Portfolios</span></div>
+    <div class="icon" ondblclick="openLogin()"><div class="icon-img">🖥️</div><span>Login</span></div>
+    <div class="icon" ondblclick="openHelp()"><div class="icon-img">❓</div><span>Help</span></div>
+  </div>
+
+  <!-- LOGIN WIN -->
+  <div class="w95" id="wl">
+    <div class="w95-tb" id="wl-tb">
+      <span style="font-size:14px">🖥️</span> PortfolioOS — Login
+      <div class="w95-btns">
+        <div class="w95-btn">_</div><div class="w95-btn">□</div>
+        <div class="w95-btn" onclick="el('wl').style.display='none'">✕</div>
+      </div>
+    </div>
+    <div class="w95-body">
+      <div class="term" id="login-term">
+        <div class="to w" style="letter-spacing:1px;margin-bottom:2px">PortfolioOS Login — v2.0.26</div>
+        <div class="to d" style="margin-bottom:10px">──────────────────────────────</div>
+        <div id="lform">
+          <div class="to g" style="margin-bottom:8px">Build and share your terminal portfolio.</div>
+          <div class="t-row"><span class="t-pr">login:~$</span><input class="t-in" id="iu" type="text" placeholder="email or username" autocomplete="off"></div>
+          <div class="t-row" style="margin-bottom:10px"><span class="t-pr">passwd:~$</span><input class="t-in" id="ip" type="password" placeholder="password (any)"></div>
+          <div class="to r" id="lerr" style="display:none;margin-bottom:6px"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+            <button class="soc-btn" onclick="doLogin()">[ LOGIN ]</button>
+            <button class="soc-btn" onclick="demoLogin()" style="color:var(--y);border-color:var(--y)">[ DEMO ACCESS ]</button>
+          </div>
+          <div class="to d" style="font-size:11px;margin-bottom:6px">── or sign in with ──</div>
+          <div class="soc-btns">
+            <button class="soc-btn" onclick="socialLogin('google')">[ 🔵 GOOGLE ]</button>
+            <button class="soc-btn" onclick="socialLogin('github')">[ ⚫ GITHUB ]</button>
+          </div>
+          <div class="to d" style="font-size:10px;margin-top:12px">Any credentials work — this is a demo.</div>
+        </div>
+        <div id="lok" style="display:none">
+          <div class="to g">✓ Authentication successful.</div>
+          <div class="to w" id="lwelc"></div>
+          <div class="to d">Loading dashboard...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD WIN -->
+  <div class="w95" id="wd" style="display:none">
+    <div class="w95-tb" id="wd-tb">
+      <span style="font-size:14px">📁</span> My Portfolios — PortfolioOS
+      <div class="w95-btns">
+        <div class="w95-btn">_</div><div class="w95-btn">□</div>
+        <div class="w95-btn" onclick="el('wd').style.display='none'">✕</div>
+      </div>
+    </div>
+    <div class="w95-body" style="height:calc(100% - 26px)">
+      <div class="dl">
+        <!-- SIDEBAR -->
+        <div class="d-side">
+          <div class="d-sh">// portfolios</div>
+          <button class="btn-n" onclick="newPort()">+ NEW_PORTFOLIO</button>
+          <div id="plist"></div>
+          <div style="margin-top:auto;padding-top:10px;border-top:1px solid #1a1a1a">
+            <div style="color:#333;font-size:10px;margin-bottom:4px">logged in as:</div>
+            <div id="cu" style="color:var(--g);font-size:11px;word-break:break-all"></div>
+            <button class="btn-n" style="margin-top:8px;border-color:#333;color:#333" onclick="logout()">[ LOGOUT ]</button>
+          </div>
+        </div>
+        <!-- MAIN -->
+        <div class="d-main">
+          <div class="d-tabs">
+            <div class="d-tab act" onclick="tab(this,'edit')">EDIT</div>
+            <div class="d-tab" onclick="tab(this,'prev')">PREVIEW</div>
+            <div class="d-tab" onclick="tab(this,'exp')">EXPORT</div>
+          </div>
+          <!-- EDIT -->
+          <div class="d-pnl act" id="p-edit">
+            <div class="eform">
+              <div style="color:var(--g);font-size:10px;letter-spacing:2px">// PORTFOLIO EDITOR</div>
+              <div class="ff"><label class="fl">NAME</label><input class="fi" id="fn" type="text" placeholder="Your full name"></div>
+              <div class="ff"><label class="fl">TITLE / ROLE</label><input class="fi" id="ft" type="text" placeholder="e.g. Full-Stack Dev · Designer · Founder"></div>
+              <div class="ff"><label class="fl">BIO</label><textarea class="fta" id="fb" placeholder="Short intro about yourself..."></textarea></div>
+              <div class="ff"><label class="fl">SKILLS</label><input class="fi" id="fsk" type="text" placeholder="React, Node.js, Python, Design, ..."></div>
+              <div class="ff"><label class="fl">PROJECTS</label><textarea class="fta" id="fp" placeholder="ProjectName: brief description&#10;AnotherProject: description"></textarea></div>
+              <div class="ff"><label class="fl">CONTACT</label><input class="fi" id="fc" type="text" placeholder="email@you.com · @twitter · github.com/you"></div>
+              <div class="ff">
+                <label class="fl">THEME</label>
+                <div class="themes">
+                  <button class="th-opt sel" data-t="green" style="color:var(--g)" onclick="pickT(this)">GREEN</button>
+                  <button class="th-opt" data-t="amber" style="color:#ffb000" onclick="pickT(this)">AMBER</button>
+                  <button class="th-opt" data-t="cyan" style="color:var(--c)" onclick="pickT(this)">CYAN</button>
+                  <button class="th-opt" data-t="white" style="color:#fff" onclick="pickT(this)">WHITE</button>
+                </div>
+              </div>
+              <div class="f-acts">
+                <button class="btn-y" onclick="preview()">▶ PREVIEW</button>
+                <button class="btn-g" onclick="savePort()">✓ SAVE</button>
+              </div>
+              <div class="msg-ok" id="smsg"></div>
+            </div>
+          </div>
+          <!-- PREVIEW -->
+          <div class="d-pnl" id="p-prev">
+            <div class="prev-frame" id="pframe">
+              <span class="prev-line" style="color:#333"># Fill in the Edit tab and click PREVIEW</span>
+            </div>
+            <div style="padding:0 16px 16px;display:flex;gap:8px">
+              <button class="btn-y" onclick="preview()">↻ REFRESH</button>
+            </div>
+          </div>
+          <!-- EXPORT -->
+          <div class="d-pnl" id="p-exp">
+            <div class="exp-card">
+              <div class="exp-t">⬇ DOWNLOAD AS HTML</div>
+              <div class="exp-d">Standalone HTML file — host on GitHub Pages, Vercel, Netlify, or open locally.</div>
+              <button class="btn-g" onclick="dlHTML()">DOWNLOAD_PORTFOLIO.HTML</button>
+            </div>
+            <div class="exp-card">
+              <div class="exp-t">🔗 SHAREABLE LINK</div>
+              <div class="exp-d">Encode your portfolio data into a URL you can share anywhere.</div>
+              <div class="share-box" id="sbox">// click generate to create link</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn-g" onclick="genLink()">GENERATE LINK</button>
+                <button class="btn-y" id="cpbtn" style="display:none" onclick="cpLink()">COPY LINK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASKBAR -->
+  <div id="tb">
+    <button class="tb-s">⊞ Start</button>
+    <div class="tb-sep"></div>
+    <div class="tb-btn" id="tbl" onclick="togW('wl')">🖥️ Login</div>
+    <div class="tb-btn" id="tbd" onclick="togW('wd')">📁 Portfolios</div>
+    <div class="tb-clk" id="tbc">00:00</div>
+  </div>
+</div>
+
+<script>
+(function(){
+const THEMES={green:'#00ff41',amber:'#ffb000',cyan:'#00ffff',white:'#ffffff'};
+let S={user:null,ports:[],active:null,theme:'green'};
+
+function el(id){return document.getElementById(id)}
+window.el=el;
+
+// ── BOOT ──
+const BOOT=[
+  {t:'',c:'gap'},{t:'',c:'gap'},
+  {t:'PORTFOLIOOS  v2.0.26',c:'title'},
+  {t:'Copyright (C) 2026 PortfolioOS Inc.',c:'dim'},
+  {t:'',c:'gap'},
+  {t:'CPU: CreativeProcessor X4 @ 3.6GHz',c:'ok'},
+  {t:'Memory Test: 8192MB',c:'ok'},
+  {t:'Initializing portfolio engine',c:'ok'},
+  {t:'Loading terminal renderer',c:'ok'},
+  {t:'Mounting creative file system',c:'ok'},
+  {t:'Starting network services',c:'ok'},
+  {t:'',c:'gap'},
+  {t:'WARNING: No existing portfolio detected.',c:'warn'},
+  {t:'WARNING: Terminal theme set to GREEN.',c:'warn'},
+  {t:'',c:'gap'},
+  {t:'Starting PortfolioOS...',c:'ok'},
+  {t:'',c:'gap'},
+];
+const boot=el('s-boot');
+function runBoot(){
+  let d=160;
+  BOOT.forEach(l=>{
+    setTimeout(()=>{
+      const div=document.createElement('div');
+      div.className='bl v '+(l.c||'');
+      div.textContent=l.t;
+      boot.appendChild(div);
+    },d);
+    d+=l.c==='gap'?55:70+Math.random()*55;
+  });
+  setTimeout(()=>goTo('s-boot','s-splash'),d+300);
+}
+
+// ── TRANSITIONS ──
+function goTo(from,to){
+  const f=el(from),t2=el(to);
+  f.style.animation='fadeOut .5s ease forwards';
+  setTimeout(()=>{
+    f.classList.remove('on');f.style.animation='';f.style.display='none';
+    t2.style.display='flex';t2.style.opacity='0';t2.classList.add('on');
+    requestAnimationFrame(()=>{t2.style.transition='opacity .5s';t2.style.opacity='1'});
+  },500);
+}
+
+// ── SPLASH ──
+el('btn-start').addEventListener('click',()=>goTo('s-splash','s-desk'));
+
+// ── DESK ──
+el('s-desk').addEventListener('click',()=>{
+  goTo('s-desk','s-os');
+  setTimeout(()=>{startClock();showLogin();},650);
+});
+
+// ── CLOCK ──
+function startClock(){
+  function t(){const n=new Date();el('tbc').textContent=n.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',hour12:true});}
+  t();setInterval(t,1000);
+}
+
+// ── LOGIN ──
+function showLogin(){
+  const w=el('wl');w.style.display='flex';
+  w.style.cssText+='top:50%;left:50%;transform:translate(-50%,-50%);width:min(500px,96vw);position:absolute';
+  el('tbl').style.display='flex';
+  makeDrag(w,el('wl-tb'));
+}
+window.openLogin=showLogin;
+
+function doLogin(u){
+  const user=u||el('iu').value.trim();
+  if(!user){el('lerr').textContent='Error: username required';el('lerr').style.display='block';return;}
+  completeLogin(user);
+}
+window.doLogin=doLogin;
+window.demoLogin=function(){completeLogin('demo@portfolioos.dev');};
+window.socialLogin=function(p){completeLogin(p==='google'?'user@gmail.com':'dev@github.com');};
+
+function completeLogin(user){
+  S.user=user;localStorage.setItem('pos_u',user);
+  try{S.ports=JSON.parse(localStorage.getItem('pos_p_'+user)||'[]');}catch{S.ports=[];}
+  el('lform').style.display='none';
+  el('lok').style.display='block';
+  el('lwelc').textContent='Welcome, '+user;
+  setTimeout(()=>{el('wl').style.display='none';openDash();},1100);
+}
+
+window.logout=function(){
+  S={user:null,ports:[],active:null,theme:'green'};localStorage.removeItem('pos_u');
+  el('wd').style.display='none';el('tbd').style.display='none';
+  el('lform').style.display='block';el('lok').style.display='none';
+  el('iu').value='';el('ip').value='';showLogin();
+};
+
+// ── DASHBOARD ──
+window.openDash=function(){
+  const w=el('wd');w.style.display='flex';
+  w.style.cssText+='position:absolute;top:14px;left:14px;right:14px;bottom:38px;width:auto;height:calc(100vh - 52px)';
+  el('tbd').style.display='flex';
+  el('cu').textContent=S.user||'?';
+  renderList();makeDrag(w,el('wd-tb'));
+};
+window.openHelp=function(){alert('PortfolioOS 2026\n\nDouble-click desktop icons to open windows.\nCreate your terminal portfolio and export as HTML.');};
+
+function renderList(){
+  const list=el('plist');list.innerHTML='';
+  if(!S.ports.length){list.innerHTML='<div style="color:#333;font-size:11px;padding:6px 0">No portfolios yet.<br>Click + NEW to start.</div>';return;}
+  S.ports.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.className='pi'+(i===S.active?' act':'');
+    d.innerHTML='<div class="pi-n">'+(p.name||'Unnamed')+'</div><div class="pi-d">'+(p.date||'')+'</div>';
+    d.onclick=()=>loadPort(i);list.appendChild(d);
+  });
+}
+
+function loadPort(i){
+  S.active=i;const p=S.ports[i];
+  el('fn').value=p.name||'';el('ft').value=p.title||'';
+  el('fb').value=p.bio||'';el('fsk').value=p.skills||'';
+  el('fp').value=p.projects||'';el('fc').value=p.contact||'';
+  S.theme=p.theme||'green';
+  document.querySelectorAll('.th-opt').forEach(b=>b.classList.toggle('sel',b.dataset.t===S.theme));
+  renderList();tabById('edit');
+}
+
+window.newPort=function(){
+  const p={id:Date.now(),name:'New Portfolio',title:'',bio:'',skills:'',projects:'',contact:'',theme:'green',date:new Date().toLocaleDateString()};
+  S.ports.unshift(p);S.active=0;saveAll();loadPort(0);el('fn').select();
+};
+
+window.savePort=function(){
+  if(S.active===null){window.newPort();return;}
+  const p=S.ports[S.active];
+  p.name=el('fn').value||'Unnamed';p.title=el('ft').value;p.bio=el('fb').value;
+  p.skills=el('fsk').value;p.projects=el('fp').value;p.contact=el('fc').value;
+  p.theme=S.theme;p.date=new Date().toLocaleDateString();
+  saveAll();renderList();
+  const m=el('smsg');m.textContent='✓ saved';m.className='msg-ok s';setTimeout(()=>m.className='msg-ok',2000);
+};
+
+function saveAll(){if(!S.user)return;try{localStorage.setItem('pos_p_'+S.user,JSON.stringify(S.ports));}catch{}}
+
+// ── TABS ──
+window.tab=function(btn,id){
+  document.querySelectorAll('.d-tab').forEach(t=>t.classList.remove('act'));
+  document.querySelectorAll('.d-pnl').forEach(p=>p.classList.remove('act'));
+  btn.classList.add('act');el('p-'+id).classList.add('act');
+};
+function tabById(id){
+  document.querySelectorAll('.d-tab').forEach(t=>{
+    const on=t.getAttribute('onclick')&&t.getAttribute('onclick').includes("'"+id+"'");
+    t.classList.toggle('act',on);
+  });
+  document.querySelectorAll('.d-pnl').forEach(p=>p.classList.toggle('act',p.id==='p-'+id));
+}
+
+// ── THEME ──
+window.pickT=function(btn){
+  document.querySelectorAll('.th-opt').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');S.theme=btn.dataset.t;
+};
+
+// ── PREVIEW ──
+window.preview=function(){
+  const color=THEMES[S.theme]||THEMES.green;
+  const name=el('fn').value||'your_name';
+  const title=el('ft').value||'Developer';
+  const bio=el('fb').value||'';
+  const skills=el('fsk').value||'';
+  const projects=el('fp').value||'';
+  const contact=el('fc').value||'';
+  const frame=el('pframe');
+  frame.innerHTML='';
+  frame.style.color=color;
+  const lines=[];
+  lines.push({t:'$ whoami',cmd:true});
+  lines.push({t:'  '+name,col:color});
+  lines.push({t:'  '+title,col:'#777'});
+  lines.push({t:''});
+  if(bio){lines.push({t:'$ cat bio.txt',cmd:true});bio.split('\n').forEach(l=>lines.push({t:'  '+l,col:'#ccc'}));}
+  if(skills){
+    lines.push({t:''});lines.push({t:'$ ls skills/',cmd:true});
+    skills.split(',').map(s=>s.trim()).filter(Boolean).forEach(s=>lines.push({t:'  '+s+'/',col:color}));
+  }
+  if(projects){
+    lines.push({t:''});lines.push({t:'$ ls projects/',cmd:true});
+    projects.split('\n').filter(Boolean).forEach(l=>{
+      const pp=l.split(':');lines.push({t:'  '+(pp[0]||'').trim()+' — '+(pp.slice(1).join(':').trim()||''),col:color});
+    });
+  }
+  if(contact){lines.push({t:''});lines.push({t:'$ cat contact.txt',cmd:true});lines.push({t:'  '+contact,col:'#ccc'});}
+  lines.push({t:''});lines.push({t:'$ █',cmd:true});
+  lines.forEach((line,i)=>{
+    setTimeout(()=>{
+      const sp=document.createElement('span');
+      sp.className='prev-line';
+      if(line.cmd){sp.innerHTML='<span style="color:'+color+'">$ </span><span style="color:#fff">'+line.t.slice(2)+'</span>';}
+      else{sp.textContent=line.t;sp.style.color=line.col||color;}
+      frame.appendChild(sp);frame.scrollTop=frame.scrollHeight;
+    },i*55);
+  });
+  tabById('prev');
+};
+
+// ── DOWNLOAD HTML ──
+window.dlHTML=function(){
+  const name=el('fn').value||'Portfolio';
+  const color=THEMES[S.theme]||THEMES.green;
+  const title=el('ft').value||'';
+  const bio=el('fb').value||'';
+  const skills=el('fsk').value||'';
+  const projects=el('fp').value||'';
+  const contact=el('fc').value||'';
+  const skillArr=skills.split(',').map(s=>s.trim()).filter(Boolean);
+  const projArr=projects.split('\n').filter(Boolean).map(l=>{const p=l.split(':');return{n:(p[0]||'').trim(),d:p.slice(1).join(':').trim()};});
+  const bioLines=bio.split('\n');
+  // Build items JSON safely
+  const items=[
+    ['$ ','whoami'],
+    ['  ',name],
+    ['  ',title,'dim'],
+    ['',''],
+    ['$ ','cat bio.txt'],
+    ...bioLines.map(l=>['  ',l,'val']),
+    ...(skillArr.length?[['',''],['$ ','ls skills/'],...skillArr.map(s=>['  ',s+'/','val'])]:[] ),
+    ...(projArr.length?[['',''],['$ ','ls projects/'],...projArr.map(p=>['  ',p.n+(p.d?' — '+p.d:''),'val'])]:[] ),
+    ...(contact?[['',''],['$ ','cat contact.txt'],['  ',contact,'val']]:[] ),
+    ['',''],
+    ['$ ','\u2588'],
+  ];
+  const esc=s=>s.replace(/\/g,'\\').replace(/'/g,"\'").replace(/\n/g,'\\n');
+  const itemsJS='['+items.map(it=>"['"+esc(it[0])+"','"+esc(it[1])+"'"+(it[2]?",'"+it[2]+"'":'')+']').join(',')+']';
+  const html='<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>'+name+'</title>\n<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">\n<style>\n*{margin:0;padding:0;box-sizing:border-box}\nhtml,body{min-height:100%;background:#000;display:flex;align-items:center;justify-content:center;padding:40px 20px;font-family:\'Share Tech Mono\',\'Courier New\',monospace}\nmain{max-width:740px;width:100%}\nspan.l{display:block;margin:2px 0;opacity:0;animation:in .05s ease forwards}\n@keyframes in{to{opacity:1}}\n.cmd{color:'+color+'}\n.val{color:'+color+'}\n.dim{color:#666}\nbody::after{content:\'\';position:fixed;inset:0;background:repeating-linear-gradient(transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);pointer-events:none}\n</style>\n</head>\n<body>\n<main>\n<div id="o"></div>\n</main>\n<script>\nconst C=\''+color+'\';const items='+itemsJS+';\nconst out=document.getElementById(\'o\');\nitems.forEach((it,i)=>{\n  setTimeout(()=>{\n    const s=document.createElement(\'span\');s.className=\'l\';\n    if(it[0]===\'$ \'){s.innerHTML=\'<span class="cmd">$ </span><span style="color:#fff">\'+it[1]+\'</span>\';}\n    else{s.textContent=it[0]+it[1];s.style.color=it[2]===\'dim\'?\'#666\':(it[2]===\'val\'?C:\'#ccc\');}\n    out.appendChild(s);\n  },i*80);\n});\n<\/script>\n</body>\n</html>';
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=name.toLowerCase().replace(/\s+/g,'-')+'-portfolio.html';a.click();
+};
+
+// ── SHARE LINK ──
+window.genLink=function(){
+  const data={n:el('fn').value,t:el('ft').value,b:el('fb').value,sk:el('fsk').value,p:el('fp').value,c:el('fc').value,th:S.theme};
+  const enc=btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  const url=location.origin+location.pathname+'#p='+enc;
+  el('sbox').textContent=url;el('cpbtn').style.display='inline-flex';
+  el('cpbtn').setAttribute('data-url',url);
+};
+window.cpLink=function(){
+  const url=el('cpbtn').getAttribute('data-url');
+  navigator.clipboard.writeText(url).then(()=>{
+    el('cpbtn').textContent='COPIED!';setTimeout(()=>el('cpbtn').textContent='COPY LINK',2000);
+  });
+};
+
+// ── WINDOW HELPERS ──
+window.togW=function(id){const w=el(id);w.style.display=w.style.display==='none'?'flex':'none';};
+function makeDrag(win,handle){
+  if(!handle)return;let sx,sy,sl,st;
+  handle.addEventListener('mousedown',e=>{
+    if(e.target.classList.contains('w95-btn'))return;
+    sx=e.clientX;sy=e.clientY;
+    const r=win.getBoundingClientRect();sl=r.left;st=r.top;
+    win.style.transform='none';win.style.left=sl+'px';win.style.top=st+'px';win.style.right='auto';win.style.bottom='auto';
+    function mv(e){win.style.left=(sl+e.clientX-sx)+'px';win.style.top=(st+e.clientY-sy)+'px';}
+    function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
+    document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+  });
+}
+
+// ── SHARED PORTFOLIO VIEW ──
+function checkHash(){
+  if(!location.hash.startsWith('#p='))return false;
+  try{
+    const data=JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(3)))));
+    const color=THEMES[data.th]||THEMES.green;
+    document.querySelectorAll('.scr').forEach(s=>{s.classList.remove('on');s.style.display='none';});
+    document.body.innerHTML='<div style="min-height:100vh;background:#000;display:flex;align-items:center;justify-content:center;padding:40px 20px;font-family:\'Share Tech Mono\',\'Courier New\',monospace"><div id="so" style="max-width:740px;width:100%"></div></div>';
+    const o=document.getElementById('so');
+    const items=[
+      ['$ ','whoami'],['  ',data.n||'','val'],['  ',data.t||'','dim'],['',''],
+      ['$ ','cat bio.txt'],...(data.b||'').split('\n').map(l=>['  ',l,'val']),
+      ...((data.sk||'')?[['',''],['$ ','ls skills/'],...(data.sk||'').split(',').map(s=>['  ',s.trim()+'/','val'])]:[] ),
+      ...((data.p||'')?[['',''],['$ ','ls projects/'],...(data.p||'').split('\n').filter(Boolean).map(l=>{const pp=l.split(':');return['  ',(pp[0]||'').trim()+' — '+pp.slice(1).join(':').trim(),'val'];})] :[]),
+      ...((data.c||'')?[['',''],['$ ','cat contact.txt'],['  ',data.c,'val']]:[] ),
+      ['',''],['$ ','\u2588'],
+    ];
+    items.forEach((it,i)=>{
+      setTimeout(()=>{
+        const s=document.createElement('span');s.style.cssText='display:block;margin:2px 0;font-size:16px;line-height:1.8';
+        if(it[0]==='$ '){s.innerHTML='<span style="color:'+color+'">$ </span><span style="color:#fff">'+it[1]+'</span>';}
+        else{s.textContent=it[0]+it[1];s.style.color=it[2]==='dim'?'#666':(it[2]==='val'?color:'#ccc');}
+        o.appendChild(s);
+      },i*75);
+    });
+    return true;
+  }catch{return false;}
+}
+
+// ── INIT ──
+function init(){
+  if(checkHash())return;
+  const su=localStorage.getItem('pos_u');
+  if(su){S.user=su;try{S.ports=JSON.parse(localStorage.getItem('pos_p_'+su)||'[]');}catch{S.ports=[];}}
+  runBoot();
+}
+init();
+})();
+</script>
+</body>
+</html>
